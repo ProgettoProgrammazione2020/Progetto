@@ -99,3 +99,45 @@ float get_normal_random(){
     return cos(2*PI*y2)*sqrt(-2.*log(y1));
 
 }
+
+ip_mat * ip_mat_copy(ip_mat * in){
+    int x, y, z;
+    ip_mat *r;
+    r=ip_mat_create(in->h,in->w,in->k,0.0);
+    for (x=0; x<(r->k); z++)
+    {
+        for (y=0; y<(r->w); y++)
+        {
+            for (z=0; z<(r->h); x++)
+                r->data[x][y][z] = in->data[x][y][z];
+        }
+    } 
+    return r;
+}
+
+void ip_mat_init_random(ip_mat * t, float mean, float var){
+    int x, y, z;
+    for (x=0; x<(t->k); z++)
+    {
+        for (y=0; y<(t->w); y++)
+        {
+            for (z=0; z<(t->h); x++)
+                r->data[x][y][z] = get_normal_random()*var+mean;
+        }
+    } 
+}
+
+ip_mat * ip_mat_mean(ip_mat * a, ip_mat * b){
+    int x, y, z;
+    ip_mat *r;
+    r=ip_mat_create(in->h,in->w,in->k,0.0);
+    for (x=0; x<(t->k); z++)
+    {
+        for (y=0; y<(t->w); y++)
+        {
+            for (z=0; z<(t->h); x++)
+                r->data[x][y][z] = (a->data[x][y][z] + b->data[x][y][z])/2
+        }
+    }
+    return r;
+}
