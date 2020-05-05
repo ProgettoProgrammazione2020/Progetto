@@ -99,3 +99,26 @@ float get_normal_random(){
     return cos(2*PI*y2)*sqrt(-2.*log(y1));
 
 }
+
+ip_mat * ip_mat_create(unsigned int h, unsigned int w,unsigned  int k, float v)
+{
+    int x, y, z;
+    ip_mat *result;
+    result = (ip_mat*)malloc(sizeof(ip_mat));
+    result->w = w;
+    result->h = h;
+    result->k = k;
+    result->data = (float***)malloc(h * sizeof (float**));
+    for (x=0; x<h; x++)
+    {
+        result->data[x] = (float**)malloc(w * sizeof(float*));
+        for (y=0; y<w; y++)
+        {
+            result->data[x][y] = (float*)malloc(k*sizeof(float));
+            for (z=0; z<k; z++)
+                result->data[x][y][z] = v;
+        }
+    }   
+    result->stat = (stats*)malloc(k*sizeof(stats));
+    return result; 
+}
