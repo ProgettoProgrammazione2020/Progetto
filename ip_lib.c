@@ -104,12 +104,12 @@ ip_mat * ip_mat_copy(ip_mat * in){
     int x, y, z;
     ip_mat *r;
     r=ip_mat_create(in->h,in->w,in->k,0.0);
-    for (x=0; x<(r->k); z++)
+    for (z=0; z<(r->k); z++)
     {
-        for (y=0; y<(r->w); y++)
+        for (y=0; y<(r->h); y++)
         {
-            for (z=0; z<(r->h); x++)
-                r->data[x][y][z] = in->data[x][y][z];
+            for (x=0; x<(r->w); x++)
+                set_val(r,x,y,z,get_val(in,x,y,z));
         }
     } 
     return r;
@@ -117,12 +117,12 @@ ip_mat * ip_mat_copy(ip_mat * in){
 
 void ip_mat_init_random(ip_mat * t, float mean, float var){
     int x, y, z;
-    for (x=0; x<(t->k); z++)
+    for (z=0; z<(t->k); z++)
     {
-        for (y=0; y<(t->w); y++)
+        for (y=0; y<(t->h); y++)
         {
-            for (z=0; z<(t->h); x++)
-                r->data[x][y][z] = get_normal_random()*var+mean;
+            for (x=0; x<(t->w); x++)
+                set_val(t,x,y,z,get_normal_random()*var+mean);
         }
     } 
 }
@@ -131,12 +131,12 @@ ip_mat * ip_mat_mean(ip_mat * a, ip_mat * b){
     int x, y, z;
     ip_mat *r;
     r=ip_mat_create(in->h,in->w,in->k,0.0);
-    for (x=0; x<(t->k); z++)
+    for (z=0; z<(t->k); z++)
     {
-        for (y=0; y<(t->w); y++)
+        for (y=0; y<(t->h); y++)
         {
-            for (z=0; z<(t->h); x++)
-                r->data[x][y][z] = (a->data[x][y][z] + b->data[x][y][z])/2
+            for (x=0; x<(t->w); x++)
+                r->data[x][y][z] = (get_val(a,x,y,z) + get_val(b,x,y,z))/2;
         }
     }
     return r;
