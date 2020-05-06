@@ -100,6 +100,7 @@ float get_normal_random(){
 
 }
 
+<<<<<<< HEAD
 void compute_stats(ip_mat * t){
     float max,min,somma;
     int x,y,z;
@@ -150,3 +151,68 @@ ip_mat * ip_mat_subset(ip_mat * t, unsigned int row_start, unsigned int row_end,
     }
 }
     
+=======
+ip_mat * ip_mat_copy(ip_mat * in){
+    int x, y, z;
+    ip_mat *r;
+    r=ip_mat_create(in->h,in->w,in->k,0.0);
+    for (z=0; z<(r->k); z++)
+    {
+        for (y=0; y<(r->h); y++)
+        {
+            for (x=0; x<(r->w); x++)
+                set_val(r,x,y,z,get_val(in,x,y,z));
+        }
+    } 
+    return r;
+}
+
+void ip_mat_init_random(ip_mat * t, float mean, float var){
+    int x, y, z;
+    for (z=0; z<(t->k); z++)
+    {
+        for (y=0; y<(t->h); y++)
+        {
+            for (x=0; x<(t->w); x++)
+                set_val(t,x,y,z,get_normal_random()*var+mean);
+        }
+    } 
+}
+
+ip_mat * ip_mat_mean(ip_mat * a, ip_mat * b){
+    int x, y, z;
+    ip_mat *r;
+    r=ip_mat_create(in->h,in->w,in->k,0.0);
+    for (z=0; z<(t->k); z++)
+    {
+        for (y=0; y<(t->h); y++)
+        {
+            for (x=0; x<(t->w); x++)
+                r->data[x][y][z] = (get_val(a,x,y,z) + get_val(b,x,y,z))/2;
+        }
+    }
+    return r;
+}
+ip_mat * ip_mat_create(unsigned int h, unsigned int w,unsigned  int k, float v)
+{
+    int x, y, z;
+    ip_mat *result;
+    result = (ip_mat*)malloc(sizeof(ip_mat));
+    result->w = w;
+    result->h = h;
+    result->k = k;
+    result->data = (float***)malloc(h * sizeof (float**));
+    for (x=0; x<h; x++)
+    {
+        result->data[x] = (float**)malloc(w * sizeof(float*));
+        for (y=0; y<w; y++)
+        {
+            result->data[x][y] = (float*)malloc(k*sizeof(float));
+            for (z=0; z<k; z++)
+                result->data[x][y][z] = v;
+        }
+    }   
+    result->stat = (stats*)malloc(k*sizeof(stats));
+    return result; 
+}
+>>>>>>> 42e407dd205f2eb378c2779b60a0b196d2747332
