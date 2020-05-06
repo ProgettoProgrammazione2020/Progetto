@@ -99,3 +99,54 @@ float get_normal_random(){
     return cos(2*PI*y2)*sqrt(-2.*log(y1));
 
 }
+
+void compute_stats(ip_mat * t){
+    float max,min,somma;
+    int x,y,z;
+    for(x=0;x<(t->k);x++)
+    {
+        max=get_val(t,0,0,x);
+        min=get_val(t,0,0,x);
+        for(y=0;y<(t->h);y++)
+        {
+            for(z=0;z<(t->w);z++)
+            {
+                if(max<(get_val(t,y,z,x))){
+                    max=get_val(t,y,z,x);
+                }
+                if(min>(get_val(t,y,z,x))){
+                    min=get_val(t,y,z,x);
+                }
+                somma+=get_val(t,y,z,x);
+                    
+            }
+        }
+        t->stat[k]->min=min;
+        t->stat[k]->max=max;
+        t->stat[k]->mean=(somma/((t->h)*(t->w)));
+        
+    }
+}
+
+ip_mat * ip_mat_subset(ip_mat * t, unsigned int row_start, unsigned int row_end, unsigned int col_start, unsigned int col_end){
+    int x,y,z;
+    if((row_end-1)>(t->h) || (col_end-1)>(t->w)){
+        printf("Errore ip_mat_subset!!!");
+        exit(1);
+    }else{
+        ip_mat *r=ip_mat_create(row_end,col_end,(t->k));
+        for(x=0;x<(t->k);x++)
+        {
+            for(y=0;y<row_end+;y++)
+            {
+                for(z=0;z<col_end;z++)
+                {
+                    set_val(r,y,z,x,get_val(t,y,z,x));
+                }
+            }
+            
+        }
+        return r;
+    }
+}
+    
