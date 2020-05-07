@@ -21,7 +21,7 @@ void ip_mat_show(ip_mat * t){
     }
 }
 
-void ip_mat_show_stats(ip_mat * t){
+/*void ip_mat_show_stats(ip_mat * t){
     unsigned int k;
 
     compute_stats(t);
@@ -32,7 +32,7 @@ void ip_mat_show_stats(ip_mat * t){
         printf("\t Max: %f\n", t->stat[k].max);
         printf("\t Mean: %f\n", t->stat[k].mean);
     }
-}
+}*/
 
 ip_mat * bitmap_to_ip_mat(Bitmap * img){
     unsigned int i=0,j=0;
@@ -121,4 +121,40 @@ ip_mat * ip_mat_create(unsigned int h, unsigned int w,unsigned  int k, float v)
     }   
     result->stat = (stats*)malloc(k*sizeof(stats));
     return result; 
+}
+
+ip_mat * ip_mat_mul_scalar(ip_mat *a, float c)
+{
+    int x, y, z;
+    ip_mat *new_mat;
+    new_mat = ip_mat_create (a->h, a->w, a->k, c);
+    for (x=0; x<a->h; x++)
+    {
+        for (y=0; y<a->w; y++)
+        {
+            for (z=0; z<a->k; z++)
+            {
+                new_mat->data[x][y][z] = a->data[x][y][z] * c;
+            }        
+        }
+    }
+    return new_mat;
+}
+
+ip_mat *  ip_mat_add_scalar(ip_mat *a, float c)
+{
+    int x, y, z;
+    ip_mat *new_mat;
+    new_mat = ip_mat_create (a->h, a->w, a->k, c);
+    for (x=0; x<a->h; x++)
+    {
+        for (y=0; y<a->w; y++)
+        {
+            for (z=0; z<a->k; z++)
+            {
+                new_mat->data[x][y][z] = a->data[x][y][z] + c;
+            }        
+        }
+    }
+    return new_mat;
 }
