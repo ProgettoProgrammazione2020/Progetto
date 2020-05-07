@@ -21,7 +21,7 @@ void ip_mat_show(ip_mat * t){
     }
 }
 
-/*void ip_mat_show_stats(ip_mat * t){
+void ip_mat_show_stats(ip_mat * t){
     unsigned int k;
 
     compute_stats(t);
@@ -32,7 +32,7 @@ void ip_mat_show(ip_mat * t){
         printf("\t Max: %f\n", t->stat[k].max);
         printf("\t Mean: %f\n", t->stat[k].mean);
     }
-}*/
+}
 
 ip_mat * bitmap_to_ip_mat(Bitmap * img){
     unsigned int i=0,j=0;
