@@ -100,6 +100,58 @@ float get_normal_random(){
 
 }
 
+
+void compute_stats(ip_mat * t){
+    float max,min,somma;
+    int x,y,z;
+    for(x=0;x<(t->k);x++)
+    {
+        max=get_val(t,0,0,x);
+        min=get_val(t,0,0,x);
+        for(y=0;y<(t->h);y++)
+        {
+            for(z=0;z<(t->w);z++)
+            {
+                if(max<(get_val(t,y,z,x))){
+                    max=get_val(t,y,z,x);
+                }
+                if(min>(get_val(t,y,z,x))){
+                    min=get_val(t,y,z,x);
+                }
+                somma+=get_val(t,y,z,x);
+                    
+            }
+        }
+        t->stat[k]->min=min;
+        t->stat[k]->max=max;
+        t->stat[k]->mean=(somma/((t->h)*(t->w)));
+        
+    }
+}
+
+ip_mat * ip_mat_subset(ip_mat * t, unsigned int row_start, unsigned int row_end, unsigned int col_start, unsigned int col_end){
+    int x,y,z;
+    if((row_end-1)>(t->h) || (col_end-1)>(t->w)){
+        printf("Errore ip_mat_subset!!!");
+        exit(1);
+    }else{
+        ip_mat *r=ip_mat_create(row_end,col_end,(t->k));
+        for(x=0;x<(t->k);x++)
+        {
+            for(y=0;y<row_end+;y++)
+            {
+                for(z=0;z<col_end;z++)
+                {
+                    set_val(r,y,z,x,get_val(t,y,z,x));
+                }
+            }
+            
+        }
+        return r;
+    }
+}
+    
+
 ip_mat * ip_mat_copy(ip_mat * in){
     int x, y, z;
     ip_mat *r;
@@ -159,7 +211,209 @@ ip_mat * ip_mat_create(unsigned int h, unsigned int w,unsigned  int k, float v)
             for (z=0; z<k; z++)
                 result->data[x][y][z] = v;
         }
-    }   
+    }
     result->stat = (stats*)malloc(k*sizeof(stats));
-    return result; 
+    return result;
 }
+
+ip_mat * ip_mat_sum(ip_mat * a, ip_mat * b)
+{
+    int i,j,c;
+    ip_mat *result;
+
+    if((a->w == b->w) && (a->h == b->h) && (a->k == b->k))
+    {
+        result = ip_mat_create(a->h,a->w,a->k,0.0);
+        for(i = 0; i < a->w; i++)
+        {
+            for(j = 0; j < a->h; j++)
+            {
+                for(c = 0; c < a->k; c++)
+                {
+                    set_val(result,i,j,c,get_val(a,i,j,c) + get_val(b,i,j,c));
+                }
+            }
+        }
+    }
+    else
+    {
+        printf("Le immagini sono di dimensioni diverse");
+        result = NULL;
+    }
+
+
+    return result;
+
+}
+
+ip_mat * ip_mat_sub(ip_mat * a, ip_mat * b)
+{
+    int i,j,c;
+    ip_mat *result;
+
+    if((a->w == b->w) && (a->h == b->h) && (a->k == b->k))
+    {
+        result = ip_mat_create(a->h,a->w,a->k,0.0);
+        for(i = 0; i < a->w; i++)
+        {
+            for(j = 0; j < a->h; j++)
+            {
+                for(c = 0; c < a->k; c++)
+                {
+                    set_val(result,i,j,c,get_val(a,i,j,c) - get_val(b,i,j,c));
+                }
+            }
+        }
+    }
+    else
+    {
+        printf("Le immagini sono di dimensioni diverse");
+        result = NULL;
+    }
+
+    return result;
+
+}
+
+/* Concatena due ip_mat su una certa dimensione.
+ * Ad esempio:
+ * ip_mat_concat(ip_mat * a, ip_mat * b, 0);
+ *      produrrà un nuovo ip_mat di dimensioni:
+ *      out.h = a.h + b.h
+ *      out.w = a.w = b.w
+ *      out.k = a.k = b.k
+ *
+ * ip_mat_concat(ip_mat * a, ip_mat * b, 1);
+ *      produrrà un nuovo ip_mat di dimensioni:
+ *      out.h = a.h = b.h
+ *      out.w = a.w + b.w
+ *      out.k = a.k = b.k
+ *
+ * ip_mat_concat(ip_mat * a, ip_mat * b, 2);
+ *      produrrà un nuovo ip_mat di dimensioni:
+ *      out.h = a.h = b.h
+ *      out.w = a.w = b.w
+ *      out.k = a.k + b.k
+ * */
+ip_mat * ip_mat_concat(ip_mat * a, ip_mat * b, int dimensione)
+{
+    int i, j, c;
+    ip_mat *result;
+    if((dimensione == 0) && (a->w == b->w) && (a->k == b->k))
+    {
+      result = ip_mat_create(a->h + b->h, a->w, a->k, 0.0);
+      for(i = 0; i < a->h;i++) /*adding a*/
+      {
+        for(j = 0; j < result->w;j++)
+        {
+          for(c = 0; c < result->k; c++)
+          {
+            set_val(result,i,j,c,get_val(a,i,j,c));
+          }
+        }
+      }
+      for(i = 0; i < b->h;i++) /*adding b*/
+      {
+        for(j = 0; j < result->w;j++)
+        {
+          for(c = 0; c < result->k; c++)
+          {
+            set_val(result,i + a->h,j,c,get_val(b,i,j,c));
+          }
+        }
+      }
+    }
+    else if((dimensione == 1) && (a->h == b->h) && (a->k == b->k))
+    {
+      result = ip_mat_create(a->h, a->w + b->w, a->k, 0.0);
+      for(i = 0; i < result->h;i++) /*adding a*/
+      {
+        for(j = 0; j < a->w;j++)
+        {
+          for(c = 0; c < result->k; c++)
+          {
+            set_val(result,i,j,c,get_val(a,i,j,c));
+          }
+        }
+      }
+      for(i = 0; i < result->h;i++) /*adding b*/
+      {
+        for(j = 0; j < b->w;j++)
+        {
+          for(c = 0; c < result->k; c++)
+          {
+            set_val(result,i,j+ a->w,c,get_val(b,i,j,c));
+          }
+        }
+      }
+    }
+    else if((dimensione == 2) && (a->h == b->h) && (a->w == b->w))
+    {
+      result = ip_mat_create(a->h, a->w , a->k + b->k, 0.0);
+      for(i = 0; i < result->h;i++) /*adding a*/
+      {
+        for(j = 0; j < result->w;j++)
+        {
+          for(c = 0; c < a->k; c++)
+          {
+            set_val(result,i,j,c,get_val(a,i,j,c));
+          }
+        }
+      }
+      for(i = 0; i < result->h;i++) /*adding b*/
+      {
+        for(j = 0; j < result->w;j++)
+        {
+          for(c = 0; c < b->k; c++)
+          {
+            set_val(result,i,j,c+ a->k,get_val(b,i,j,c));
+          }
+        }
+      }
+    }
+    else
+    {
+      result = NULL;
+      printf("Input error: incongruent dimensions");
+    }
+
+    return result;
+}
+
+
+ip_mat * ip_mat_mul_scalar(ip_mat *a, float c)
+{
+    int x, y, z;
+    ip_mat *new_mat;
+    new_mat = ip_mat_create (a->h, a->w, a->k, c);
+    for (x=0; x<a->h; x++)
+    {
+        for (y=0; y<a->w; y++)
+        {
+            for (z=0; z<a->k; z++)
+            {
+                new_mat->data[x][y][z] = a->data[x][y][z] * c;
+            }        
+        }
+    }
+    return new_mat;
+}
+
+ip_mat *  ip_mat_add_scalar(ip_mat *a, float c)
+{
+    int x, y, z;
+    ip_mat *new_mat;
+    new_mat = ip_mat_create (a->h, a->w, a->k, c);
+    for (x=0; x<a->h; x++)
+    {
+        for (y=0; y<a->w; y++)
+        {
+            for (z=0; z<a->k; z++)
+            {
+                new_mat->data[x][y][z] = a->data[x][y][z] + c;
+            }        
+        }
+    }
+    return new_mat;
+}
+
