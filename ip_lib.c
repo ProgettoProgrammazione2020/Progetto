@@ -100,7 +100,7 @@ float get_normal_random(){
 
 }
 
-<<<<<<< HEAD
+
 void compute_stats(ip_mat * t){
     float max,min,somma;
     int x,y,z;
@@ -151,7 +151,7 @@ ip_mat * ip_mat_subset(ip_mat * t, unsigned int row_start, unsigned int row_end,
     }
 }
     
-=======
+
 ip_mat * ip_mat_copy(ip_mat * in){
     int x, y, z;
     ip_mat *r;
@@ -215,7 +215,7 @@ ip_mat * ip_mat_create(unsigned int h, unsigned int w,unsigned  int k, float v)
     result->stat = (stats*)malloc(k*sizeof(stats));
     return result; 
 }
-<<<<<<< HEAD
+
 
 ip_mat * ip_mat_mul_scalar(ip_mat *a, float c)
 {
@@ -252,6 +252,4 @@ ip_mat *  ip_mat_add_scalar(ip_mat *a, float c)
     }
     return new_mat;
 }
-=======
->>>>>>> 42e407dd205f2eb378c2779b60a0b196d2747332
->>>>>>> 867d9c94bb5fb3a16cef56119070b12ccf5fe10b
+
