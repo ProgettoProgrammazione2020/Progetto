@@ -122,9 +122,9 @@ void compute_stats(ip_mat * t){
                     
             }
         }
-        t->stat[x]->min=min;
-        t->stat[x]->max=max;
-        t->stat[x]->mean=(somma/(float)((t->h)*(t->w)));
+        t->stat[x].min=min;
+        t->stat[x].max=max;
+        t->stat[x].mean=(somma/(float)((t->h)*(t->w)));
         
     }
 }
@@ -182,16 +182,21 @@ void ip_mat_init_random(ip_mat * t, float mean, float var){
 ip_mat * ip_mat_mean(ip_mat * a, ip_mat * b){
     int x, y, z;
     ip_mat *r;
-    r=ip_mat_create(a->h,a->w,a->k,0.0);
-    for (z=0; z<(r->k); z++)
-    {
-        for (y=0; y<(r->h); y++)
+    if((a->h)!=(b->h) || (a->w)!=(b->w) || (a->k)!=(b->k)){
+        printf("Errore ip_mat_mean!!!");
+        exit(1);
+    }else{
+        r=ip_mat_create(a->h,a->w,a->k,0.0);
+        for (z=0; z<(r->k); z++)
         {
-            for (x=0; x<(r->w); x++)
-                r->data[x][y][z] = (get_val(a,x,y,z) + get_val(b,x,y,z))/2.0;
+            for (y=0; y<(r->h); y++)
+            {
+                for (x=0; x<(r->w); x++)
+                    r->data[x][y][z] = (get_val(a,x,y,z) + get_val(b,x,y,z))/2.0;
+            }
         }
+        return r;
     }
-    return r;
 }
 ip_mat * ip_mat_create(unsigned int h, unsigned int w,unsigned  int k, float v)
 {
