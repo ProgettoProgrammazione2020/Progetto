@@ -118,7 +118,171 @@ ip_mat * ip_mat_create(unsigned int h, unsigned int w,unsigned  int k, float v)
             for (z=0; z<k; z++)
                 result->data[x][y][z] = v;
         }
-    }   
+    }
     result->stat = (stats*)malloc(k*sizeof(stats));
-    return result; 
+    return result;
+}
+
+ip_mat * ip_mat_sum(ip_mat * a, ip_mat * b)
+{
+    int i,j,c;
+    ip_mat *result;
+
+    if((a->w == b->w) && (a->h == b->h) && (a->k == b->k))
+    {
+        result = ip_mat_create(a->h,a->w,a->k,0.0);
+        for(i = 0; i < a->w; i++)
+        {
+            for(j = 0; j < a->h; j++)
+            {
+                for(c = 0; c < a->k; c++)
+                {
+                    set_val(result,i,j,c,get_val(a,i,j,c) + get_val(b,i,j,c));
+                }
+            }
+        }
+    }
+    else
+    {
+        printf("Le immagini sono di dimensioni diverse");
+        result = NULL;
+    }
+
+
+    return result;
+
+}
+
+ip_mat * ip_mat_sub(ip_mat * a, ip_mat * b)
+{
+    int i,j,c;
+    ip_mat *result;
+
+    if((a->w == b->w) && (a->h == b->h) && (a->k == b->k))
+    {
+        result = ip_mat_create(a->h,a->w,a->k,0.0);
+        for(i = 0; i < a->w; i++)
+        {
+            for(j = 0; j < a->h; j++)
+            {
+                for(c = 0; c < a->k; c++)
+                {
+                    set_val(result,i,j,c,get_val(a,i,j,c) - get_val(b,i,j,c));
+                }
+            }
+        }
+    }
+    else
+    {
+        printf("Le immagini sono di dimensioni diverse");
+        result = NULL;
+    }
+
+    return result;
+
+}
+
+/* Concatena due ip_mat su una certa dimensione.
+ * Ad esempio:
+ * ip_mat_concat(ip_mat * a, ip_mat * b, 0);
+ *      produrrà un nuovo ip_mat di dimensioni:
+ *      out.h = a.h + b.h
+ *      out.w = a.w = b.w
+ *      out.k = a.k = b.k
+ *
+ * ip_mat_concat(ip_mat * a, ip_mat * b, 1);
+ *      produrrà un nuovo ip_mat di dimensioni:
+ *      out.h = a.h = b.h
+ *      out.w = a.w + b.w
+ *      out.k = a.k = b.k
+ *
+ * ip_mat_concat(ip_mat * a, ip_mat * b, 2);
+ *      produrrà un nuovo ip_mat di dimensioni:
+ *      out.h = a.h = b.h
+ *      out.w = a.w = b.w
+ *      out.k = a.k + b.k
+ * */
+ip_mat * ip_mat_concat(ip_mat * a, ip_mat * b, int dimensione)
+{
+    int i, j, c;
+    ip_mat *result;
+    if((dimensione == 0) && (a->w == b->w) && (a->k == b->k))
+    {
+      result = ip_mat_create(a->h + b->h, a->w, a->k, 0.0);
+      for(i = 0; i < a->h;i++) /*adding a*/
+      {
+        for(j = 0; j < result->w;j++)
+        {
+          for(c = 0; c < result->k; c++)
+          {
+            set_val(result,i,j,c,get_val(a,i,j,c));
+          }
+        }
+      }
+      for(i = 0; i < b->h;i++) /*adding b*/
+      {
+        for(j = 0; j < result->w;j++)
+        {
+          for(c = 0; c < result->k; c++)
+          {
+            set_val(result,i + a->h,j,c,get_val(b,i,j,c));
+          }
+        }
+      }
+    }
+    else if((dimensione == 1) && (a->h == b->h) && (a->k == b->k))
+    {
+      result = ip_mat_create(a->h, a->w + b->w, a->k, 0.0);
+      for(i = 0; i < result->h;i++) /*adding a*/
+      {
+        for(j = 0; j < a->w;j++)
+        {
+          for(c = 0; c < result->k; c++)
+          {
+            set_val(result,i,j,c,get_val(a,i,j,c));
+          }
+        }
+      }
+      for(i = 0; i < result->h;i++) /*adding b*/
+      {
+        for(j = 0; j < b->w;j++)
+        {
+          for(c = 0; c < result->k; c++)
+          {
+            set_val(result,i,j+ a->w,c,get_val(b,i,j,c));
+          }
+        }
+      }
+    }
+    else if((dimensione == 2) && (a->h == b->h) && (a->w == b->w))
+    {
+      result = ip_mat_create(a->h, a->w , a->k + b->k, 0.0);
+      for(i = 0; i < result->h;i++) /*adding a*/
+      {
+        for(j = 0; j < result->w;j++)
+        {
+          for(c = 0; c < a->k; c++)
+          {
+            set_val(result,i,j,c,get_val(a,i,j,c));
+          }
+        }
+      }
+      for(i = 0; i < result->h;i++) /*adding b*/
+      {
+        for(j = 0; j < result->w;j++)
+        {
+          for(c = 0; c < b->k; c++)
+          {
+            set_val(result,i,j,c+ a->k,get_val(b,i,j,c));
+          }
+        }
+      }
+    }
+    else
+    {
+      result = NULL;
+      printf("Input error: incongruent dimensions");
+    }
+
+    return result;
 }
