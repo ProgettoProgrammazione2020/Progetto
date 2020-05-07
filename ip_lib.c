@@ -122,9 +122,9 @@ void compute_stats(ip_mat * t){
                     
             }
         }
-        t->stat[k]->min=min;
-        t->stat[k]->max=max;
-        t->stat[k]->mean=(somma/((t->h)*(t->w)));
+        t->stat[x]->min=min;
+        t->stat[x]->max=max;
+        t->stat[x]->mean=(somma/(float)((t->h)*(t->w)));
         
     }
 }
@@ -135,10 +135,10 @@ ip_mat * ip_mat_subset(ip_mat * t, unsigned int row_start, unsigned int row_end,
         printf("Errore ip_mat_subset!!!");
         exit(1);
     }else{
-        ip_mat *r=ip_mat_create(row_end,col_end,(t->k));
+        ip_mat *r=ip_mat_create(row_end,col_end,(t->k),0.0);
         for(x=0;x<(t->k);x++)
         {
-            for(y=0;y<row_end+;y++)
+            for(y=0;y<row_end;y++)
             {
                 for(z=0;z<col_end;z++)
                 {
