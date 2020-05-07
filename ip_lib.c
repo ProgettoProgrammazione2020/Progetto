@@ -130,13 +130,13 @@ void ip_mat_init_random(ip_mat * t, float mean, float var){
 ip_mat * ip_mat_mean(ip_mat * a, ip_mat * b){
     int x, y, z;
     ip_mat *r;
-    r=ip_mat_create(in->h,in->w,in->k,0.0);
-    for (z=0; z<(t->k); z++)
+    r=ip_mat_create(a->h,a->w,a->k,0.0);
+    for (z=0; z<(r->k); z++)
     {
-        for (y=0; y<(t->h); y++)
+        for (y=0; y<(r->h); y++)
         {
-            for (x=0; x<(t->w); x++)
-                r->data[x][y][z] = (get_val(a,x,y,z) + get_val(b,x,y,z))/2;
+            for (x=0; x<(r->w); x++)
+                r->data[x][y][z] = (get_val(a,x,y,z) + get_val(b,x,y,z))/2.0;
         }
     }
     return r;
