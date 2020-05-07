@@ -125,6 +125,7 @@ void compute_stats(ip_mat * t){
         t->stat[x].min=min;
         t->stat[x].max=max;
         t->stat[x].mean=(somma/(float)((t->h)*(t->w)));
+        somma=0.0;
         
     }
 }
@@ -197,6 +198,21 @@ ip_mat * ip_mat_mean(ip_mat * a, ip_mat * b){
         }
         return r;
     }
+}
+void ip_mat_free(ip_mat *a){
+    int x, y;
+    for (x=0; x<(a->h); x++)
+    {
+        
+        for (y=0; y<(a->w); y++)
+        {
+            free(a->data[x][y]);
+        }
+        free(a->data[x]);
+    }
+    free(a->data);
+    free(a->stat);
+    free(a);
 }
 ip_mat * ip_mat_create(unsigned int h, unsigned int w,unsigned  int k, float v)
 {
