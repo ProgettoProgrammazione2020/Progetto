@@ -466,7 +466,7 @@ ip_mat * ip_mat_corrupt(ip_mat * a, float amount){
         {
             for (z=0; z<a->k; z++)
             {
-                result->data[x][y][z]=get_normal_random()*amount+(a->data[x][y][z]);
+                set_val(result, x, y, z, (get_normal_random()*(amount/2)+(get_val(a,x,y,z))));
             }
         }
     }
@@ -482,7 +482,7 @@ ip_mat * ip_mat_blend(ip_mat * a, ip_mat * b, float alpha){
         {
             for (z=0; z<a->k; z++)
             {
-                blend->data[x][y][z] = alpha * a->data[x][y][z] + (1-alpha)* b->data[x][y][z];
+                set_val(blend , x, y, z, (alpha * (get_val(a,x,y,z))) + (1-alpha)* (get_val(b,x,y,z)));
             }
         }
     }
