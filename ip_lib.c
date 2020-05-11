@@ -119,14 +119,14 @@ void compute_stats(ip_mat * t){
                     min=get_val(t,y,z,x);
                 }
                 somma+=get_val(t,y,z,x);
-                    
+
             }
         }
         t->stat[x].min=min;
         t->stat[x].max=max;
         t->stat[x].mean=(somma/(float)((t->h)*(t->w)));
         somma=0.0;
-        
+
     }
 }
 
@@ -146,12 +146,12 @@ ip_mat * ip_mat_subset(ip_mat * t, unsigned int row_start, unsigned int row_end,
                     set_val(r,y,z,x,get_val(t,y,z,x));
                 }
             }
-            
+
         }
         return r;
     }
 }
-    
+
 
 ip_mat * ip_mat_copy(ip_mat * in){
     int x, y, z;
@@ -164,7 +164,7 @@ ip_mat * ip_mat_copy(ip_mat * in){
             for (x=0; x<(r->w); x++)
                 set_val(r,x,y,z,get_val(in,x,y,z));
         }
-    } 
+    }
     return r;
 }
 
@@ -177,7 +177,7 @@ void ip_mat_init_random(ip_mat * t, float mean, float var){
             for (x=0; x<(t->w); x++)
                 set_val(t,x,y,z,get_normal_random()*var+mean);
         }
-    } 
+    }
 }
 
 ip_mat * ip_mat_mean(ip_mat * a, ip_mat * b){
@@ -203,7 +203,7 @@ void ip_mat_free(ip_mat *a){
     int x, y;
     for (x=0; x<(a->h); x++)
     {
-        
+
         for (y=0; y<(a->w); y++)
         {
             free(a->data[x][y]);
@@ -414,7 +414,7 @@ ip_mat * ip_mat_mul_scalar(ip_mat *a, float c)
             for (z=0; z<a->k; z++)
             {
                 new_mat->data[x][y][z] = a->data[x][y][z] * c;
-            }        
+            }
         }
     }
     return new_mat;
@@ -432,9 +432,24 @@ ip_mat *  ip_mat_add_scalar(ip_mat *a, float c)
             for (z=0; z<a->k; z++)
             {
                 new_mat->data[x][y][z] = a->data[x][y][z] + c;
-            }        
+            }
         }
     }
     return new_mat;
 }
 
+ip_mat * ip_mat_to_gray_scale(ip_mat * in)
+{
+  ip_mat *result = ip_mat_create(in->h, in->w, 1, 0.0);
+  int i,j;
+
+  for(i = 0; i < result->h; i++)
+  {
+    for(j = 0; j < result->w; j++)
+    {
+      result->data[i][j][0] = (in->data[i][j][0] + in->data[i][j][1] + in->data[i][j][2]) / 3.0;
+    }
+  }
+
+  return result;
+}
