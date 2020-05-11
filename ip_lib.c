@@ -455,3 +455,18 @@ ip_mat * ip_mat_to_gray_scale(ip_mat * in)
 
   return result;
 }
+ip_mat * ip_mat_corrupt(ip_mat * a, float amount){
+    int x, y, z;
+    ip_mat *result = ip_mat_create(a->h, a->w, a->k, 0.0);
+    for (x=0; x<a->h; x++)
+    {
+        for (y=0; y<a->w; y++)
+        {
+            for (z=0; z<a->k; z++)
+            {
+                result->data[x][y][z]=get_normal_random()*amount+(a->data[x][y][z]);
+            }
+        }
+    }
+    return result;    
+}
