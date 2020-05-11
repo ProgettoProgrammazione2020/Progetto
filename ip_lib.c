@@ -440,7 +440,7 @@ ip_mat *  ip_mat_add_scalar(ip_mat *a, float c)
 
 ip_mat * ip_mat_to_gray_scale(ip_mat * in)
 {
-  ip_mat *result = ip_mat_create(in->h, in->w, 1, 0.0);
+  ip_mat *result = ip_mat_create(in->h, in->w, 3, 0.0);
   int i,j;
 
   for(i = 0; i < result->h; i++)
@@ -448,6 +448,8 @@ ip_mat * ip_mat_to_gray_scale(ip_mat * in)
     for(j = 0; j < result->w; j++)
     {
       result->data[i][j][0] = (in->data[i][j][0] + in->data[i][j][1] + in->data[i][j][2]) / 3.0;
+      result->data[i][j][1] = (in->data[i][j][0] + in->data[i][j][1] + in->data[i][j][2]) / 3.0;
+      result->data[i][j][2] = (in->data[i][j][0] + in->data[i][j][1] + in->data[i][j][2]) / 3.0;
     }
   }
 
