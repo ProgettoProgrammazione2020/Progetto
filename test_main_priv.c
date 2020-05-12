@@ -37,5 +37,16 @@ int main(){
     bm_save(out,destination);//salvo l'immagine su filter
     bm_free(out);
     return 0;
+<<<<<<< HEAD
+=======
+=======
+    char *source = "flower.bmp";
+    //zchar *source = "flower2.bmp";
+    //char *source1 = "mongolfiere.bmp";
+    char *destination = "bright_flower.bmp";
+    //char *destination = "blending.bmp";
+    
+    int success;
+>>>>>>> 7da163015736b29aa0b9627303b5ca1a0cfe79c8
 
 }
