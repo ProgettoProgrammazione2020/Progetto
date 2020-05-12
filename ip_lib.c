@@ -105,51 +105,69 @@ float get_normal_random(){
 */
 
 void compute_stats(ip_mat * t){
-    float max,min,somma;
-    int x,y,z;
-    for(x=0;x<(t->k);x++)
+    float max,min,somma = 0.0;
+    int row,col,channel;
+    for(channel=0;channel<(t->k);channel++)
     {
-        max=get_val(t,0,0,x);
-        min=get_val(t,0,0,x);
-        for(y=0;y<(t->h);y++)
+        max=get_val(t,0,0,channel);
+        min=get_val(t,0,0,channel);
+        for(row=0;row<(t->h);row++)
         {
-            for(z=0;z<(t->w);z++)
+            for(col=0;col<(t->w);col++)
             {
-                if(max<(get_val(t,y,z,x))){
-                    max=get_val(t,y,z,x);
+                if(max<(get_val(t,row,col,channel))){
+                    max=get_val(t,row,col,channel);
                 }
-                if(min>(get_val(t,y,z,x))){
-                    min=get_val(t,y,z,x);
+                if(min>(get_val(t,row,col,channel))){
+                    min=get_val(t,row,col,channel);
                 }
-                somma+=get_val(t,y,z,x);
+                somma+=get_val(t,row,col,channel);
 
             }
         }
-        t->stat[x].min=min;
-        t->stat[x].max=max;
-        t->stat[x].mean=(somma/(float)((t->h)*(t->w)));
+        t->stat[channel].min=min;
+        t->stat[channel].max=max;
+        t->stat[channel].mean=(somma/(float)((t->h)*(t->w)));
         somma=0.0;
 
     }
 }
 
 ip_mat * ip_mat_subset(ip_mat * t, unsigned int row_start, unsigned int row_end, unsigned int col_start, unsigned int col_end){
-    int x,y,z;
-    if((row_end-1)>(t->h) || (col_end-1)>(t->w)){
+    
+    if(row_end==0){
+        row_end=1;
+    }
+    if(col_end==0){
+     col_end=1;
+    }
+    if((row_end-1)>(t->h) || (col_end-1)>(t->w) || (row_start>row_end) || (col_start>col_end)){
         printf("[ip_mat_subset] Errore: dimensioni errate");
         exit(1);
     }else{
-        ip_mat *r=ip_mat_create(row_end,col_end,(t->k),0.0);
-        for(x=0;x<(t->k);x++)
+        if(row_start==0){
+            row_start=1;
+        }
+        
+        if(col_start==0){
+            col_start=1;
+        }
+        
+        int row,col,channel;
+        ip_mat *r=ip_mat_create((row_end-row_start)+1,(col_end-col_start)+1,(t->k),0.0);
+        
+        for(channel=0;channel<(t->k);channel++)
         {
-            for(y=0;y<row_end;y++)
+            for(row=0;row<=row_end-row_start;row++)
             {
-                for(z=0;z<col_end;z++)
+                for(col=0;col<=col_end-col_start;col++)
                 {
-                    set_val(r,y,z,x,get_val(t,y,z,x));
+//                  printf("%d ", col);
+                    set_val(r,row,col,channel,get_val(t,row,col,channel));
                 }
             }
         }
+        ip_mat_free(t);
         return r;
     }
 }
@@ -201,21 +219,23 @@ ip_mat * ip_mat_mean(ip_mat * a, ip_mat * b){
         return r;
     }
 }
+
 void ip_mat_free(ip_mat *a){
-    int x, y;
-    for (x=0; x<(a->h); x++)
+    int row, col;
+    for (row=0; row<(a->h); row++)
     {
 
-        for (y=0; y<(a->w); y++)
+        for (col=0; col<(a->w); col++)
         {
-            free(a->data[x][y]);
+            free(a->data[row][col]);
         }
-        free(a->data[x]);
+        free(a->data[row]);
     }
     free(a->data);
     free(a->stat);
     free(a);
 }
+
 ip_mat * ip_mat_create(unsigned int h, unsigned int w,unsigned  int k, float v)
 {
     int x, y, z;
@@ -465,15 +485,15 @@ ip_mat * ip_mat_blend(ip_mat * a, ip_mat * b, float alpha){
         printf("Errore ip_mat_mean!!!");
         exit(1);
     }else{
-        int x, y, z;
+        int row,col,channel;
         ip_mat *blend  = ip_mat_create(a->h, a->w, a->k, 0.0);
-        for (x=0; x<a->h; x++)
+        for (row=0; row<a->h; row++)
         {
-            for (y=0; y<a->w; y++)
+            for (col=0; col<a->w; col++)
             {
-                for (z=0; z<a->k; z++)
+                for (channel=0; channel<a->k; channel++)
                 {
-                    set_val(blend , x, y, z, (alpha * (get_val(a,x,y,z))) + (1-alpha)* (get_val(b,x,y,z)));
+                    set_val(blend , row, col, channel, (alpha * (get_val(a,row,col,channel))) + (1-alpha)* (get_val(b,row,col,channel)));
                 }
             }
         }
