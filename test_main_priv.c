@@ -6,7 +6,7 @@
 int main(){
 
     char *source = "flower.bmp";
-    //char *source = "flower2.bmp";
+    //zchar *source = "flower2.bmp";
     //char *source1 = "mongolfiere.bmp";
     char *destination = "B&W_flower.bmp";
     //char *destination = "blending.bmp";
