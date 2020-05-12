@@ -174,46 +174,51 @@ ip_mat * ip_mat_subset(ip_mat * t, unsigned int row_start, unsigned int row_end,
 
 
 ip_mat * ip_mat_copy(ip_mat * in){
-    int x, y, z;
+    int channel, row, col;
     ip_mat *r;
     r=ip_mat_create(in->h,in->w,in->k,0.0);
-    for (z=0; z<(r->k); z++)
+    for (channel=0; channel<(r->k); channel++)
     {
-        for (y=0; y<(r->h); y++)
+        for (row=0; row<(r->h); row++)
         {
-            for (x=0; x<(r->w); x++)
-                set_val(r,x,y,z,get_val(in,x,y,z));
+            for (col=0; col<(r->w); col++)
+                set_val(r,row,col,channel,get_val(in,row,col,channel));
         }
+        /*r->stat[z].min=in->stat[z].min;
+        r->stat[z].max=in->stat[z].max;
+        r->stat[z].mean=in->stat[z].mean;*/
     }
     return r;
 }
 
 void ip_mat_init_random(ip_mat * t, float mean, float var){
-    int x, y, z;
-    for (z=0; z<(t->k); z++)
+    int channel, row, col;
+    for (channel=0; channel<(t->k); channel++)
     {
-        for (y=0; y<(t->h); y++)
+        for (row=0; row<(t->h); row++)
         {
-            for (x=0; x<(t->w); x++)
-                set_val(t,x,y,z,get_normal_random()*var+mean);
+            for (col=0; col<(t->w); col++)
+                set_val(t,row,col,channel,get_normal_random()*var+mean);
         }
     }
 }
 
 ip_mat * ip_mat_mean(ip_mat * a, ip_mat * b){
-    int x, y, z;
+    int channel, row, col;
     ip_mat *r;
     if((a->h)!=(b->h) || (a->w)!=(b->w) || (a->k)!=(b->k)){
         printf("[ip_mat_mean] Errore: dimensioni incongruenti!!!");
         exit(1);
     }else{
         r=ip_mat_create(a->h,a->w,a->k,0.0);
-        for (z=0; z<(r->k); z++)
+        for (channel=0; channel<(r->k); channel++)
         {
-            for (y=0; y<(r->h); y++)
+            for (row=0; row<(r->h); row++)
             {
-                for (x=0; x<(r->w); x++)
-                    r->data[x][y][z] = (get_val(a,x,y,z) + get_val(b,x,y,z))/2.0;
+                for (col=0; col<(r->w); col++)
+                {
+                    set_val(r,row,col,channel,(get_val(a,row,col,channel) + get_val(b,row,col,channel))/2.0);
+                }
             }
         }
         return r;
@@ -261,49 +266,49 @@ ip_mat * ip_mat_create(unsigned int h, unsigned int w,unsigned  int k, float v)
 
 ip_mat * ip_mat_sum(ip_mat * a, ip_mat * b)
 {
-    int i,j,c;
-    ip_mat *result;
+  int channel, row, col;
+  ip_mat *result;
 
-    if((a->w == b->w) && (a->h == b->h) && (a->k == b->k))
-    {
-        result = ip_mat_create(a->h,a->w,a->k,0.0);
-        for(i = 0; i < a->w; i++)
-        {
-            for(j = 0; j < a->h; j++)
-            {
-                for(c = 0; c < a->k; c++)
-                {
-                    set_val(result,i,j,c,get_val(a,i,j,c) + get_val(b,i,j,c));
-                }
-            }
-        }
-    }
-    else
-    {
-        printf("[ip_mat_sum]Le immagini sono di dimensioni diverse");
-        result = NULL;
-    }
+  if((a->w == b->w) && (a->h == b->h) && (a->k == b->k))
+  {
+      result = ip_mat_create(a->h,a->w,a->k,0.0);
+      for(channel = 0; channel < a->k; channel++)
+      {
+          for(row = 0; row < a->h; row++)
+          {
+              for(col = 0; col < a->w; col++)
+              {
+                  set_val(result,row,col,channel,get_val(a,row,col,channel) + get_val(b,row,col,channel));
+              }
+          }
+      }
+  }
+  else
+  {
+      printf("[ip_mat_sum]Le immagini sono di dimensioni diverse");
+      exit(1);
+  }
 
-
-    return result;
+  return result;
 
 }
 
 ip_mat * ip_mat_sub(ip_mat * a, ip_mat * b)
 {
-    int i,j,c;
+
+    int channel, row, col;
     ip_mat *result;
 
     if((a->w == b->w) && (a->h == b->h) && (a->k == b->k))
     {
         result = ip_mat_create(a->h,a->w,a->k,0.0);
-        for(i = 0; i < a->w; i++)
+        for(channel = 0; channel < a->k; channel++)
         {
-            for(j = 0; j < a->h; j++)
+            for(row = 0; row < a->h; row++)
             {
-                for(c = 0; c < a->k; c++)
+                for(col = 0; col < a->w; col++)
                 {
-                    set_val(result,i,j,c,get_val(a,i,j,c) - get_val(b,i,j,c));
+                    set_val(result,row,col,channel,get_val(a,row,col,channel) - get_val(b,row,col,channel));
                 }
             }
         }
@@ -311,7 +316,7 @@ ip_mat * ip_mat_sub(ip_mat * a, ip_mat * b)
     else
     {
         printf("[ip_mat_sub]Le immagini sono di dimensioni diverse");
-        result = NULL;
+        exit(1);
     }
 
     return result;
@@ -321,28 +326,28 @@ ip_mat * ip_mat_sub(ip_mat * a, ip_mat * b)
 
 ip_mat * ip_mat_concat(ip_mat * a, ip_mat * b, int dimensione)
 {
-    int i, j, c;
+    int channel, row, col;
     ip_mat *result;
     if((dimensione == 0) && (a->w == b->w) && (a->k == b->k))
     {
       result = ip_mat_create(a->h + b->h, a->w, a->k, 0.0);
-      for(i = 0; i < a->h;i++) /*adding a*/
+      for(channel = 0; channel < result->k;channel++) /*adding a*/
       {
-        for(j = 0; j < result->w;j++)
+        for(row = 0; row < a->h;row++)
         {
-          for(c = 0; c < result->k; c++)
+          for(col = 0; col < result->w; col++)
           {
-            set_val(result,i,j,c,get_val(a,i,j,c));
+            set_val(result,row,col,channel,get_val(a,row,col,channel));
           }
         }
       }
-      for(i = 0; i < b->h;i++) /*adding b*/
+      for(channel = 0; channel < result->k; channel++) /*adding b*/
       {
-        for(j = 0; j < result->w;j++)
+        for(row = 0; row < b->h;row++)
         {
-          for(c = 0; c < result->k; c++)
+          for(col = 0; col < result->w; col++)
           {
-            set_val(result,i + a->h,j,c,get_val(b,i,j,c));
+            set_val(result,row + a->h,col,channel,get_val(b,row,col,channel));
           }
         }
       }
@@ -350,23 +355,23 @@ ip_mat * ip_mat_concat(ip_mat * a, ip_mat * b, int dimensione)
     else if((dimensione == 1) && (a->h == b->h) && (a->k == b->k))
     {
       result = ip_mat_create(a->h, a->w + b->w, a->k, 0.0);
-      for(i = 0; i < result->h;i++) /*adding a*/
+      for(channel = 0; channel < result->k;channel++) /*adding a*/
       {
-        for(j = 0; j < a->w;j++)
+        for(row = 0; row < result->h;row++)
         {
-          for(c = 0; c < result->k; c++)
+          for(col = 0; col < a->w; col++)
           {
-            set_val(result,i,j,c,get_val(a,i,j,c));
+            set_val(result,row,col,channel,get_val(a,row,col,channel));
           }
         }
       }
-      for(i = 0; i < result->h;i++) /*adding b*/
+      for(channel = 0; channel < result->k;channel++) /*adding b*/
       {
-        for(j = 0; j < b->w;j++)
+        for(row = 0; row < result->h;row++)
         {
-          for(c = 0; c < result->k; c++)
+          for(col = 0; col < b->w; col++)
           {
-            set_val(result,i,j + a->w,c,get_val(b,i,j,c));
+            set_val(result,row,col + a->w,channel,get_val(b,row,col,channel));
           }
         }
       }
@@ -374,30 +379,30 @@ ip_mat * ip_mat_concat(ip_mat * a, ip_mat * b, int dimensione)
     else if((dimensione == 2) && (a->h == b->h) && (a->w == b->w))
     {
       result = ip_mat_create(a->h, a->w , a->k + b->k, 0.0);
-      for(i = 0; i < result->h;i++) /*adding a*/
+      for(channel = 0; channel < a->k;channel++) /*adding a*/
       {
-        for(j = 0; j < result->w;j++)
+        for(row = 0; row < result->h;row++)
         {
-          for(c = 0; c < a->k; c++)
+          for(col = 0; col < result->w; col++)
           {
-            set_val(result,i,j,c,get_val(a,i,j,c));
+            set_val(result,row,col,channel,get_val(a,row,col,channel));
           }
         }
       }
-      for(i = 0; i < result->h;i++) /*adding b*/
+      for(channel = 0; channel < b->k;channel++) /*adding b*/
       {
-        for(j = 0; j < result->w;j++)
+        for(row = 0; row < result->h;row++)
         {
-          for(c = 0; c < b->k; c++)
+          for(col = 0; col < result->w; col++)
           {
-            set_val(result,i,j,c + a->k,get_val(b,i,j,c));
+            set_val(result,row,col,channel + a->k,get_val(b,row,col,channel));
           }
         }
       }
     }
     else
     {
-      result = NULL;
+      exit(1);
       printf("[ip_mat_concat]Input error: dimensioni incongruenti");
     }
 
@@ -407,16 +412,17 @@ ip_mat * ip_mat_concat(ip_mat * a, ip_mat * b, int dimensione)
 
 ip_mat * ip_mat_mul_scalar(ip_mat *a, float c)
 {
-    int x, y, z;
+    int row, col, channel;
     ip_mat *new_mat;
     new_mat = ip_mat_create (a->h, a->w, a->k, c);
-    for (x=0; x<a->h; x++)
+    for (channel=0; channel<a->k; channel++)
     {
-        for (y=0; y<a->w; y++)
+        for (row=0; row<a->h; row++)
         {
-            for (z=0; z<a->k; z++)
+            for (col=0; col<a->w; col++)
             {
-              set_val(new_mat, x, y, z, get_val(a, x, y, z) * c);
+                set_val(new_mat,row,col,channel,a->data[row][col][channel] * c);
+                /*new_mat->data[x][y][z] = a->data[x][y][z] * c;*/
             }
         }
     }
@@ -425,19 +431,22 @@ ip_mat * ip_mat_mul_scalar(ip_mat *a, float c)
 
 ip_mat *  ip_mat_add_scalar(ip_mat *a, float c)
 {
-    int x, y, z;
+    int row, col, channel;
     ip_mat *new_mat;
     new_mat = ip_mat_create (a->h, a->w, a->k, c);
-    for (x=0; x<a->h; x++)
+    for (channel=0; channel<a->k; channel++)
     {
-        for (y=0; y<a->w; y++)
+        for (row=0; row<a->h; row++)
         {
-            for (z=0; z<a->k; z++)
+            for (col=0; col<a->w; col++)
             {
-                set_val(new_mat, x, y, z, get_val(a, x, y, z) + c);
+                set_val(new_mat,row,col,channel,a->data[row][col][channel] + c);
+                /*new_mat->data[x][y][z] = a->data[x][y][z] + c;*/
             }
+            
         }
     }
+    compute_stats(new_mat);
     return new_mat;
 }
 /*
@@ -447,17 +456,17 @@ ip_mat *  ip_mat_add_scalar(ip_mat *a, float c)
 ip_mat * ip_mat_to_gray_scale(ip_mat * in)
 {
   ip_mat *result = ip_mat_create(in->h, in->w, 3, 0.0);
-  int i,j;
+  int row,col;
   float mean;
 
-  for(i = 0; i < result->h; i++)
+  for(row = 0; row < result->h; row++)
   {
-    for(j = 0; j < result->w; j++)
+    for(col = 0; col < result->w; col++)
     {
-      mean = (get_val(in, i, j, 0) + get_val(in, i, j, 1) + get_val(in, i, j, 2)) / 3.0;
-      set_val(result, i, j, 0, mean);
-      set_val(result, i, j, 1, mean);
-      set_val(result, i, j, 2, mean);
+      mean = (get_val(in, row, col, 0) + get_val(in, row, col, 1) + get_val(in, row, col, 2)) / 3.0;
+      set_val(result, row, col, 0, mean);
+      set_val(result, row, col, 1, mean);
+      set_val(result, row, col, 2, mean);
     }
   }
   return result;
@@ -465,22 +474,26 @@ ip_mat * ip_mat_to_gray_scale(ip_mat * in)
 
 
 ip_mat * ip_mat_corrupt(ip_mat * a, float amount){
-    int x, y, z;
+    int channel, row, col;
     ip_mat *result = ip_mat_create(a->h, a->w, a->k, 0.0);
-    for (x=0; x<a->h; x++)
+    for (channel=0; channel<(a->k); channel++)
     {
-        for (y=0; y<a->w; y++)
+        for (row=0; row<(a->h); row++)
         {
-            for (z=0; z<a->k; z++)
+            for (col=0; col<(a->w); col++)
             {
-                set_val(result, x, y, z, (get_normal_random()*(amount/3)+(get_val(a,x,y,z))));
+                set_val(result, row, col, channel, (get_normal_random()*(amount/3)+(get_val(a,row,col,channel))));
             }
         }
     }
     return result;
-
 }
+
 ip_mat * ip_mat_blend(ip_mat * a, ip_mat * b, float alpha){
+    int x, y, z;
+    ip_mat *blend  = ip_mat_create(a->h, a->w, a->k, 0.0);
+    for (z=0; z<a->k; z++)
+    {
     if((a->h)!=(b->h) || (a->w)!=(b->w) || (a->k)!=(b->k)){
         printf("Errore ip_mat_mean!!!");
         exit(1);
@@ -499,4 +512,31 @@ ip_mat * ip_mat_blend(ip_mat * a, ip_mat * b, float alpha){
         }
         return blend;
     }
+}
+
+ip_mat * ip_mat_brighten(ip_mat * a, float bright)
+{
+    ip_mat *result;
+    result = ip_mat_add_scalar (a, bright);
+    normalize_rgb(result);
+    return result;
+}
+
+void normalize_rgb(ip_mat *a) /*controllo se i valori sono nel range 0-255; se sono fuori range vengono portati a 0 (se sono negativi) e a 255 (se sono >255) */
+{
+    int x, y, z;
+    for (x=0; x<a->h; x++)
+    {
+        for (y=0; y<a->w; y++)
+        {
+            for (z=0; z<a->k; z++)
+            {
+                if(a->data[x][y][z]  >255)
+                {
+                    set_val(a,x,y,z,255);
+                }
+                if (a->data[x][y][z] <0)
+                {
+                    set_val(a,x,y,z,0);
+                }
 }
