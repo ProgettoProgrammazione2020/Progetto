@@ -423,7 +423,7 @@ ip_mat *  ip_mat_add_scalar(ip_mat *a, float c)
                 set_val(new_mat,row,col,channel,a->data[row][col][channel] + c);
                 /*new_mat->data[x][y][z] = a->data[x][y][z] + c;*/
             }
-            
+
         }
     }
     compute_stats(new_mat);
@@ -475,7 +475,7 @@ ip_mat * ip_mat_blend(ip_mat * a, ip_mat * b, float alpha){
     for (z=0; z<a->k; z++)
     {
     if((a->h)!=(b->h) || (a->w)!=(b->w) || (a->k)!=(b->k)){
-        printf("Errore ip_mat_mean!!!");
+        printf("[ip_mat_mean]Errore: dimensioni incongruenti");
         exit(1);
     }else{
         int x, y, z;
@@ -492,7 +492,10 @@ ip_mat * ip_mat_blend(ip_mat * a, ip_mat * b, float alpha){
         }
         return blend;
     }
+  }
 }
+
+
 
 ip_mat * ip_mat_brighten(ip_mat * a, float bright)
 {
@@ -519,4 +522,7 @@ void normalize_rgb(ip_mat *a) /*controllo se i valori sono nel range 0-255; se s
                 {
                     set_val(a,x,y,z,0);
                 }
-}
+            }
+        }
+    }
+  }
