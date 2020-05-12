@@ -8,7 +8,7 @@ int main(){
     char *source = "flower.bmp";
     //char *source = "flower2.bmp";
     //char *source1 = "mongolfiere.bmp";
-    char *destination = "B&W_flower.bmp";
+    char *destination = "bright_flower.bmp";
     //char *destination = "blending.bmp";
     
     int success;
@@ -20,7 +20,8 @@ int main(){
     //ip_mat *test2_ipmat = bitmap_to_ip_mat(test2); //converto in ip_mat
     
     //ip_mat *result = ip_mat_blend(test1_ipmat, test2_ipmat, 1.0);//BLENDING DI DUE IMMAGINI
-    ip_mat *result = ip_mat_to_gray_scale(test1_ipmat); //CONVERTO IN SCALA DI GRIGI
+    /*ip_mat *result = ip_mat_to_gray_scale(test1_ipmat); //CONVERTO IN SCALA DI GRIGI*/
+    ip_mat *result = ip_mat_brighten(test1_ipmat, 100.0);
     
     Bitmap *out = ip_mat_to_bitmap(result);//converto in bitmap
 

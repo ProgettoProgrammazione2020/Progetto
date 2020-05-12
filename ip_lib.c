@@ -164,6 +164,9 @@ ip_mat * ip_mat_copy(ip_mat * in){
             for (x=0; x<(r->w); x++)
                 set_val(r,x,y,z,get_val(in,x,y,z));
         }
+        /*r->stat[z].min=in->stat[z].min;
+        r->stat[z].max=in->stat[z].max;
+        r->stat[z].mean=in->stat[z].mean;*/
     }
     return r;
 }
@@ -404,16 +407,17 @@ ip_mat * ip_mat_concat(ip_mat * a, ip_mat * b, int dimensione)
 
 ip_mat * ip_mat_mul_scalar(ip_mat *a, float c)
 {
-    int x, y, z;
+    int row, col, channel;
     ip_mat *new_mat;
     new_mat = ip_mat_create (a->h, a->w, a->k, c);
-    for (x=0; x<a->h; x++)
+    for (channel=0; channel<a->k; channel++)
     {
-        for (y=0; y<a->w; y++)
+        for (row=0; row<a->h; row++)
         {
-            for (z=0; z<a->k; z++)
+            for (col=0; col<a->w; col++)
             {
-                new_mat->data[x][y][z] = a->data[x][y][z] * c;
+                set_val(new_mat,row,col,channel,a->data[row][col][channel] * c);
+                /*new_mat->data[x][y][z] = a->data[x][y][z] * c;*/
             }
         }
     }
@@ -422,19 +426,22 @@ ip_mat * ip_mat_mul_scalar(ip_mat *a, float c)
 
 ip_mat *  ip_mat_add_scalar(ip_mat *a, float c)
 {
-    int x, y, z;
+    int row, col, channel;
     ip_mat *new_mat;
     new_mat = ip_mat_create (a->h, a->w, a->k, c);
-    for (x=0; x<a->h; x++)
+    for (channel=0; channel<a->k; channel++)
     {
-        for (y=0; y<a->w; y++)
+        for (row=0; row<a->h; row++)
         {
-            for (z=0; z<a->k; z++)
+            for (col=0; col<a->w; col++)
             {
-                new_mat->data[x][y][z] = a->data[x][y][z] + c;
+                set_val(new_mat,row,col,channel,a->data[row][col][channel] + c);
+                /*new_mat->data[x][y][z] = a->data[x][y][z] + c;*/
             }
+            
         }
     }
+    compute_stats(new_mat);
     return new_mat;
 }
 
@@ -487,5 +494,33 @@ ip_mat * ip_mat_blend(ip_mat * a, ip_mat * b, float alpha){
         }
     }
     return blend;
+}
+
+
+ip_mat * ip_mat_brighten(ip_mat * a, float bright)
+{
+    ip_mat *result;
+    result = ip_mat_add_scalar (a, bright);
+    normalize_rgb(result);
+    return result;
+}
+
+void normalize_rgb(ip_mat *a) /*controllo se i valori sono nel range 0-255; se sono fuori range vengono portati a 0 (se sono negativi) e a 255 (se sono >255) */
+{
+    int x, y, z;
+    for (x=0; x<a->h; x++)
+    {
+        for (y=0; y<a->w; y++)
+        {
+            for (z=0; z<a->k; z++)
+            {
+                if(a->data[x][y][z]  >255)
+                {
+                    set_val(a,x,y,z,255);
+                }
+                if (a->data[x][y][z] <0)
+                {
+                    set_val(a,x,y,z,0);
+                }
 }
 
