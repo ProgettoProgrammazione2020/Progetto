@@ -474,18 +474,23 @@ ip_mat * ip_mat_corrupt(ip_mat * a, float amount){
 
 }
 ip_mat * ip_mat_blend(ip_mat * a, ip_mat * b, float alpha){
-    int x, y, z;
-    ip_mat *blend  = ip_mat_create(a->h, a->w, a->k, 0.0);
-     for (x=0; x<a->h; x++)
-    {
-        for (y=0; y<a->w; y++)
+    if((a->h)!=(b->h) || (a->w)!=(b->w) || (a->k)!=(b->k)){
+        printf("Errore ip_mat_mean!!!");
+        exit(1);
+    }else{
+        int x, y, z;
+        ip_mat *blend  = ip_mat_create(a->h, a->w, a->k, 0.0);
+        for (x=0; x<a->h; x++)
         {
-            for (z=0; z<a->k; z++)
+            for (y=0; y<a->w; y++)
             {
-                set_val(blend , x, y, z, (alpha * (get_val(a,x,y,z))) + (1-alpha)* (get_val(b,x,y,z)));
+                for (z=0; z<a->k; z++)
+                {
+                    set_val(blend , x, y, z, (alpha * (get_val(a,x,y,z))) + (1-alpha)* (get_val(b,x,y,z)));
+                }
             }
         }
+        return blend;
     }
-    return blend;
 }
 
