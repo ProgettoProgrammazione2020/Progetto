@@ -93,11 +93,13 @@ void set_val(ip_mat * a, unsigned int i,unsigned int j,unsigned int k, float v){
     }
 }
 
-float get_normal_random(){
+float get_normal_random(float media, float std){
+
     float y1 = ( (float)(rand()) + 1. )/( (float)(RAND_MAX) + 1. );
     float y2 = ( (float)(rand()) + 1. )/( (float)(RAND_MAX) + 1. );
-    return cos(2*PI*y2)*sqrt(-2.*log(y1));
+    float num = cos(2*PI*y2)*sqrt(-2.*log(y1));
 
+    return media + num*std;
 }
 
 /*
@@ -198,7 +200,7 @@ void ip_mat_init_random(ip_mat * t, float mean, float var){
         for (row=0; row<(t->h); row++)
         {
             for (col=0; col<(t->w); col++)
-                set_val(t,row,col,channel,get_normal_random()*var+mean);
+                set_val(t,row,col,channel,get_normal_random(mean,var));
         }
     }
 }
@@ -482,7 +484,7 @@ ip_mat * ip_mat_corrupt(ip_mat * a, float amount){
         {
             for (col=0; col<(a->w); col++)
             {
-                set_val(result, row, col, channel, (get_normal_random()*(amount/3)+(get_val(a,row,col,channel))));
+                set_val(result, row, col, channel, (get_normal_random(get_val(a,row,col,channel),amount/3)));
             }
         }
     }
@@ -508,20 +510,10 @@ ip_mat * ip_mat_blend(ip_mat * a, ip_mat * b, float alpha){
         }
         return blend;
     }
-  }
 }
 
 
-
-ip_mat * ip_mat_brighten(ip_mat * a, float bright)
-{
-    ip_mat *result;
-    result = ip_mat_add_scalar (a, bright);
-    normalize_rgb(result);
-    return result;
-}
-
-void normalize_rgb(ip_mat *a) /*controllo se i valori sono nel range 0-255; se sono fuori range vengono portati a 0 (se sono negativi) e a 255 (se sono >255) */
+void normalize_rgb(ip_mat * a) /*controllo se i valori sono nel range 0-255; se sono fuori range vengono portati a 0 (se sono negativi) e a 255 (se sono >255) */
 {
     int x, y, z;
     for (x=0; x<a->h; x++)
@@ -541,4 +533,14 @@ void normalize_rgb(ip_mat *a) /*controllo se i valori sono nel range 0-255; se s
             }
         }
     }
-  }
+}
+
+ip_mat * ip_mat_brighten(ip_mat * a, float bright)
+{
+    ip_mat *result;
+    result = ip_mat_add_scalar (a, bright);
+    normalize_rgb(result);
+    return result;
+}
+
+
