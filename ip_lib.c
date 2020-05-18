@@ -474,23 +474,25 @@ ip_mat * ip_mat_blend(ip_mat * a, ip_mat * b, float alpha){
     ip_mat *blend  = ip_mat_create(a->h, a->w, a->k, 0.0);
     for (z=0; z<a->k; z++)
     {
-    if((a->h)!=(b->h) || (a->w)!=(b->w) || (a->k)!=(b->k)){
-        printf("Errore ip_mat_mean!!!");
-        exit(1);
-    }else{
-        int x, y, z;
-        ip_mat *blend  = ip_mat_create(a->h, a->w, a->k, 0.0);
-        for (x=0; x<a->h; x++)
-        {
-            for (y=0; y<a->w; y++)
+        if((a->h)!=(b->h) || (a->w)!=(b->w) || (a->k)!=(b->k)){
+            printf("Errore ip_mat_mean!!!");
+            exit(1);
+        }
+        else{
+            int x, y, z;
+            ip_mat *blend  = ip_mat_create(a->h, a->w, a->k, 0.0);
+            for (x=0; x<a->h; x++)
             {
-                for (z=0; z<a->k; z++)
+                for (y=0; y<a->w; y++)
                 {
-                    set_val(blend , x, y, z, (alpha * (get_val(a,x,y,z))) + (1-alpha)* (get_val(b,x,y,z)));
+                    for (z=0; z<a->k; z++)
+                    {
+                        set_val(blend , x, y, z, (alpha * (get_val(a,x,y,z))) + (1-alpha)* (get_val(b,x,y,z)));
+                    }
                 }
             }
+            return blend;
         }
-        return blend;
     }
 }
 
@@ -519,4 +521,35 @@ void normalize_rgb(ip_mat *a) /*controllo se i valori sono nel range 0-255; se s
                 {
                     set_val(a,x,y,z,0);
                 }
+            }
+        }
+    }
+}
+
+ip_mat * ip_mat_padding(ip_mat * a, int pad_h, int pad_w)
+{
+    ip_mat *pad_top, *pad_right_left, *pad_bottom, *result, *appoggio;
+
+    pad_top = ip_mat_create(pad_h, a->w, a->k, 0.0);
+    pad_right_left = ip_mat_create (a->h+pad_h, pad_w, a->k, 0.0);
+    pad_bottom = ip_mat_create (pad_h, a->w + 2*(pad_w), a->k, 0.0);
+
+    appoggio = ip_mat_concat (pad_top, a, 0);
+    result = ip_mat_concat (pad_right_left, appoggio, 1);
+
+    ip_mat_free (appoggio);
+
+    appoggio = result;
+    result = ip_mat_concat (appoggio, pad_right_left, 1);
+
+    ip_mat_free (appoggio);
+
+    appoggio = result;
+    result = ip_mat_concat (appoggio, pad_bottom, 0);
+
+    ip_mat_free (appoggio);
+    ip_mat_free (pad_top);
+    ip_mat_free (pad_right_left);
+    ip_mat_free (pad_bottom);
+    return result;    
 }
