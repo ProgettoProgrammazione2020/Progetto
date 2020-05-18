@@ -6,6 +6,50 @@
 #include "ip_lib.h"
 #include "bmp.h"
 
+/*
+*FUNZIONI AUSILIARIE
+*/
+void normalize_rgb(ip_mat * a) /*controllo se i valori sono nel range 0-255; se sono fuori range vengono portati a 0 (se sono negativi) e a 255 (se sono >255) */
+{
+    int x, y, z;
+    for (x=0; x<a->h; x++)
+    {
+        for (y=0; y<a->w; y++)
+        {
+            for (z=0; z<a->k; z++)
+            {
+                if(a->data[x][y][z]  >255)
+                {
+                    set_val(a,x,y,z,255);
+                }
+                if (a->data[x][y][z] <0)
+                {
+                    set_val(a,x,y,z,0);
+                }
+            }
+        }
+    }
+}
+
+float calculate_convolve(ip_mat * a, ip_mat * f, int row_start, int col_start, int selected_channel)
+{
+  int row, col;
+  float sum = 0.0;
+
+  for(row = 0; row < a->h; row++)
+  {
+    for(col = 0; col < a->w; col++)
+    {
+      sum += get_val(a, row + row_start, col + col_start, selected_channel) * get_val(f, row, col, selected_channel);
+    }
+  }
+
+  return sum;
+}
+
+/*
+*FUNZIONI PRINCIPALI
+*/
 void ip_mat_show(ip_mat * t){
     unsigned int i,l,j;
     printf("Matrix of size %d x %d x %d (hxwxk)\n",t->h,t->w,t->k);
@@ -136,7 +180,7 @@ void compute_stats(ip_mat * t){
 }
 
 ip_mat * ip_mat_subset(ip_mat * t, unsigned int row_start, unsigned int row_end, unsigned int col_start, unsigned int col_end){
-    
+
     if(row_end==0){
         row_end=1;
     }
@@ -150,14 +194,14 @@ ip_mat * ip_mat_subset(ip_mat * t, unsigned int row_start, unsigned int row_end,
         if(row_start==0){
             row_start=1;
         }
-        
+
         if(col_start==0){
             col_start=1;
         }
-        
+
         int row,col,channel;
         ip_mat *r=ip_mat_create((row_end-row_start)+1,(col_end-col_start)+1,(t->k),0.0);
-        
+
         for(channel=0;channel<(t->k);channel++)
         {
             for(row=0;row<=row_end-row_start;row++)
@@ -512,30 +556,6 @@ ip_mat * ip_mat_blend(ip_mat * a, ip_mat * b, float alpha){
     }
 }
 
-
-void normalize_rgb(ip_mat * a) /*controllo se i valori sono nel range 0-255; se sono fuori range vengono portati a 0 (se sono negativi) e a 255 (se sono >255) */
-{
-    int x, y, z;
-    for (x=0; x<a->h; x++)
-    {
-        for (y=0; y<a->w; y++)
-        {
-            for (z=0; z<a->k; z++)
-            {
-                if(a->data[x][y][z]  >255)
-                {
-                    set_val(a,x,y,z,255);
-                }
-                if (a->data[x][y][z] <0)
-                {
-                    set_val(a,x,y,z,0);
-                }
-            }
-        }
-    }
-
-}
-
 ip_mat * ip_mat_padding(ip_mat * a, int pad_h, int pad_w)
 {
     ip_mat *pad_top, *pad_right_left, *pad_bottom, *result, *appoggio;
@@ -561,7 +581,7 @@ ip_mat * ip_mat_padding(ip_mat * a, int pad_h, int pad_w)
     ip_mat_free (pad_top);
     ip_mat_free (pad_right_left);
     ip_mat_free (pad_bottom);
-    return result;    
+    return result;
 
 }
 
@@ -574,3 +594,26 @@ ip_mat * ip_mat_brighten(ip_mat * a, float bright)
 }
 
 
+
+ip_mat * ip_mat_convolve(ip_mat * a, ip_mat * f)
+{
+  int channel, row, col;
+  int i,j;
+
+  ip_mat *aux = ip_mat_padding(a, (f->w - 1) / 2, (f->h - 1) / 2);
+  ip_mat *result = ip_mat_create(a->h, a->w, a->k, 0.0);
+
+  for(channel = 0; channel < aux->k; channel++)
+  {
+    for(row = 0; row + f->h < aux->h; row++)
+    {
+      for(col = 0; col + f->w < aux->w; col++)
+      {
+         set_val(result, row, col, channel, calculate_convolve(a, f, row, col, channel));
+      }
+    }
+  }
+
+  ip_mat_free(aux);
+  return result;
+}

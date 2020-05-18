@@ -32,21 +32,9 @@ int main(){
     char *source1 = "flower.bmp";
     char *source2 = "flower.bmp";
     char *destination = "concat_2_flower.bmp";
-    Bitmap *out = NULL;
-    out = test(source1, source2, destination);
+    Bitmap *out = test(source1, source2, destination);
     bm_save(out,destination);//salvo l'immagine su filter
     bm_free(out);
     return 0;
-<<<<<<< HEAD
-=======
-=======
-    char *source = "flower.bmp";
-    //zchar *source = "flower2.bmp";
-    //char *source1 = "mongolfiere.bmp";
-    char *destination = "bright_flower.bmp";
-    //char *destination = "blending.bmp";
-    
-    int success;
->>>>>>> 7da163015736b29aa0b9627303b5ca1a0cfe79c8
 
 }

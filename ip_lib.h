@@ -179,7 +179,7 @@ void clamp(ip_mat * t, float low, float high);
 /* Genera dei numeri casuali con distribuzione Normale (versione base)
  * https://en.wikipedia.org/wiki/Box%E2%80%93Muller_transform
  * */
-float get_normal_random();
+float get_normal_random(float media, float std);
 
 /* Converte una Bitmap in una ip_mat*/
 ip_mat * bitmap_to_ip_mat(Bitmap * img);
