@@ -1,5 +1,5 @@
 test: test_main_priv.o ip_lib.o bmp.o
-	gcc test_main_priv.o ip_lib.o bmp.o -o test -lm
+	gcc test_main_priv.o ip_lib.o bmp.o -o test -g -O1 -lm
 
 test_main_priv.o: test_bmp.c ip_lib.h bmp.h
 	gcc test_main_priv.c -o test_main_priv.o -c -lm
