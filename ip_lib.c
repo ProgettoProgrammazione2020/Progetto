@@ -178,37 +178,22 @@ void compute_stats(ip_mat * t){
 
     }
 }
-
+/*Accetta valori compresi tra 0 e h-1 e tra 0 e w-1*/ 
 ip_mat * ip_mat_subset(ip_mat * t, unsigned int row_start, unsigned int row_end, unsigned int col_start, unsigned int col_end){
 
-    if(row_end==0){
-        row_end=1;
-    }
-    if(col_end==0){
-     col_end=1;
-    }
-    if((row_end-1)>(t->h) || (col_end-1)>(t->w) || (row_start>row_end) || (col_start>col_end)){
-        printf("[ip_mat_subset] Errore: dimensioni errate");
+    if((row_end)>(t->h-1) || (col_end)>(t->w-1) || (row_start>row_end) || (col_start>col_end)){
+        printf("[ip_mat_subset] Errore: dimensioni errate (inserire valori compresi tra 0 e h-1 e tra 0 e w-1");
         exit(1);
     }else{
-        if(row_start==0){
-            row_start=1;
-        }
-
-        if(col_start==0){
-            col_start=1;
-        }
-
         int row,col,channel;
         ip_mat *r=ip_mat_create((row_end-row_start)+1,(col_end-col_start)+1,(t->k),0.0);
-
+        
         for(channel=0;channel<(t->k);channel++)
         {
             for(row=0;row<=row_end-row_start;row++)
             {
                 for(col=0;col<=col_end-col_start;col++)
                 {
-//                  printf("%d ", col);
                     set_val(r,row,col,channel,get_val(t,row,col,channel));
                 }
             }
@@ -217,6 +202,7 @@ ip_mat * ip_mat_subset(ip_mat * t, unsigned int row_start, unsigned int row_end,
         return r;
     }
 }
+
 
 
 ip_mat * ip_mat_copy(ip_mat * in){
