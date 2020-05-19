@@ -3,38 +3,55 @@
 #include <stdio.h>
 #include "ip_lib.h"
 
-Bitmap* test(char const *source1, char const *source2, char const *destination)
+#define COUNT_TEST 3
+
+ip_mat * allocate_ipmat_array(int length);
+Bitmap * allocate_Bitmap_array(int length);
+
+void test(char const *source, char const *destination, int select)
 {
-  ip_mat *test1_ipmat = NULL, *test2_ipmat = NULL, *result = NULL;
-  Bitmap *test1 = NULL, *test2 = NULL, *result_ = NULL;
+  ip_mat *filter = NULL;
 
-  test1 = bm_load(source1); //carico file input
-  test1_ipmat = bitmap_to_ip_mat(test1); //converto in ip_mat
+  ip_mat *test_ipmat = NULL, *result = NULL;
+  Bitmap *test_Bitmap = NULL, *result_ = NULL;
 
-  test2 = bm_load(source2); //carico file input
-  test2_ipmat = bitmap_to_ip_mat(test2); //converto in ip_mat
+  test_Bitmap = bm_load(source); /*carico il file*/
 
-  result = ip_mat_corrupt(test1_ipmat,100); //FACCIO ROBA
+  test_ipmat = bitmap_to_ip_mat(test_Bitmap);/*converto in ip_mat*/
 
-  result_ = ip_mat_to_bitmap(result);//converto in bitmap
+  switch(select)/*FACCIO ROBA*/
+  {
+    case 0: filter = create_sharpen_filter();
+            break;
+    case 1: filter = create_edge_filter();
+            break;
+    case 2: filter = create_emboss_filter();
+            break;
+  }
 
-  //LIBERAZIONE MEMORIA
-  ip_mat_free(test1_ipmat);
-  ip_mat_free(test2_ipmat);
+  result = ip_mat_convolve(test_ipmat,filter);
+
+  result_ = ip_mat_to_bitmap(result); /*converto in bitmap*/
+
+  ip_mat_free(test_ipmat);/*LIBERAZIONE MEMORIA*/
   ip_mat_free(result);
+  ip_mat_free(filter);
+  bm_free(test_Bitmap);
 
-  return result_;
+  bm_save(result_,destination);/*salvo l'immagine su filter*/
+  bm_free(result_);
 
 }
 
 int main(){
-
-    char *source1 = "flower2.bmp";
-    char *source2 = "flower.bmp";
-    char *destination = "concat_2_flower.bmp";
-    Bitmap *out = test(source1, source2, destination);
-    bm_save(out,destination);//salvo l'immagine su filter
-    bm_free(out);
+    int i;
+    char source[] = "flower.bmp";
+    char destination[][30] = {"sharpen_flower.bmp", "edge_flower.bmp", "emboss_flower.bmp"};
+    for(i = 0; i < COUNT_TEST; i++)
+    {
+      printf("%s --> %s\n", source, destination[i]);
+      test(source, destination[i],i);
+    }
     return 0;
 
 }

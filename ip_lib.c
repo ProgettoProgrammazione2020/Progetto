@@ -34,12 +34,23 @@ void normalize_rgb(ip_mat * a) /*controllo se i valori sono nel range 0-255; se 
 float calculate_convolve(ip_mat * a, ip_mat * f, int row_start, int col_start, int selected_channel)
 {
   int row, col;
+  float a_val, f_val;
   float sum = 0.0;
 
-  for(row = 0; row < a->h; row++)
+  for(row = 0; row < f->h; row++)
   {
-    for(col = 0; col < a->w; col++)
+    for(col = 0; col < f->w; col++)
     {
+      /*printf("row: %d, col: %d, channel: %d\n", row, col, selected_channel); /*START
+      *printf("a_val: ");
+      a_val = get_val(a, row + row_start, col + col_start, selected_channel);
+      printf("%f\n",a_val);
+      *printf("f_val: ");
+      *f_val = get_val(f, row, col, selected_channel);
+      *printf("%f\n",f_val);
+      *printf("sum: ");
+      *sum += a_val * f_val;
+      *printf("%f\n\n", sum);  /* END*/
       sum += get_val(a, row + row_start, col + col_start, selected_channel) * get_val(f, row, col, selected_channel);
     }
   }
@@ -123,7 +134,7 @@ float get_val(ip_mat * a, unsigned int i,unsigned int j,unsigned int k){
     if(i<a->h && j<a->w &&k<a->k){  /* j>=0 and k>=0 and i>=0 is non sense*/
         return a->data[i][j][k];
     }else{
-        printf("[get_val]Errore: coordinate inserite non corrette");
+        printf("[get_val]Errore: coordinate inserite non corrette\n");
         exit(1);
     }
 }
@@ -132,7 +143,7 @@ void set_val(ip_mat * a, unsigned int i,unsigned int j,unsigned int k, float v){
     if(i<a->h && j<a->w &&k<a->k){
         a->data[i][j][k]=v;
     }else{
-        printf("[set_val]Errore: coordinate inserite non corrette");
+        printf("[set_val]Errore: coordinate inserite non corrette\n");
         exit(1);
     }
 }
@@ -178,16 +189,16 @@ void compute_stats(ip_mat * t){
 
     }
 }
-/*Accetta valori compresi tra 0 e h-1 e tra 0 e w-1*/ 
+/*Accetta valori compresi tra 0 e h-1 e tra 0 e w-1*/
 ip_mat * ip_mat_subset(ip_mat * t, unsigned int row_start, unsigned int row_end, unsigned int col_start, unsigned int col_end){
 
     if((row_end)>(t->h-1) || (col_end)>(t->w-1) || (row_start>row_end) || (col_start>col_end)){
-        printf("[ip_mat_subset] Errore: dimensioni errate (inserire valori compresi tra 0 e h-1 e tra 0 e w-1");
+        printf("[ip_mat_subset] Errore: dimensioni errate (inserire valori compresi tra 0 e h-1 e tra 0 e w-1)\n");
         exit(1);
     }else{
         int row,col,channel;
         ip_mat *r=ip_mat_create((row_end-row_start)+1,(col_end-col_start)+1,(t->k),0.0);
-        
+
         for(channel=0;channel<(t->k);channel++)
         {
             for(row=0;row<=row_end-row_start;row++)
@@ -239,7 +250,7 @@ ip_mat * ip_mat_mean(ip_mat * a, ip_mat * b){
     int channel, row, col;
     ip_mat *r;
     if((a->h)!=(b->h) || (a->w)!=(b->w) || (a->k)!=(b->k)){
-        printf("[ip_mat_mean] Errore: dimensioni incongruenti!!!");
+        printf("[ip_mat_mean] Errore: dimensioni incongruenti!\n");
         exit(1);
     }else{
         r=ip_mat_create(a->h,a->w,a->k,0.0);
@@ -327,7 +338,6 @@ ip_mat * ip_mat_sum(ip_mat * a, ip_mat * b)
 
 ip_mat * ip_mat_sub(ip_mat * a, ip_mat * b)
 {
-
     int channel, row, col;
     ip_mat *result;
 
@@ -347,7 +357,7 @@ ip_mat * ip_mat_sub(ip_mat * a, ip_mat * b)
     }
     else
     {
-        printf("[ip_mat_sub]Le immagini sono di dimensioni diverse");
+        printf("[ip_mat_sub]Le immagini sono di dimensioni diverse\n");
         exit(1);
     }
 
@@ -434,8 +444,8 @@ ip_mat * ip_mat_concat(ip_mat * a, ip_mat * b, int dimensione)
     }
     else
     {
+      printf("[ip_mat_concat]Input error: dimensioni incongruenti\n");
       exit(1);
-      printf("[ip_mat_concat]Input error: dimensioni incongruenti");
     }
 
     return result;
@@ -523,7 +533,7 @@ ip_mat * ip_mat_corrupt(ip_mat * a, float amount){
 
 ip_mat * ip_mat_blend(ip_mat * a, ip_mat * b, float alpha){
     if((a->h)!=(b->h) || (a->w)!=(b->w) || (a->k)!=(b->k)){
-        printf("[ip_mat_mean]Errore: dimensioni incongruenti");
+        printf("[ip_mat_blend]Errore: dimensioni incongruenti\n");
         exit(1);
     }else{
         int row,col,channel;
@@ -591,15 +601,65 @@ ip_mat * ip_mat_convolve(ip_mat * a, ip_mat * f)
 
   for(channel = 0; channel < aux->k; channel++)
   {
-    for(row = 0; row + f->h < aux->h; row++)
+    for(row = 0; row < aux->h - f->h - 1; row++)
     {
-      for(col = 0; col + f->w < aux->w; col++)
+      for(col = 0; col < aux->w - f->w - 1; col++)
       {
+        /* printf("-----\n");
+         *printf("DIMENISONI SOURCE: %d, %d, %d \n", a->h, a->w, a->k);
+         *printf("DIMENISONI FILTER: %d, %d, %d \n", f->h, f->w, f->k);
+         *printf("PIXEL START: %d, %d, %d\n\n", row, col, channel);*/
          set_val(result, row, col, channel, calculate_convolve(a, f, row, col, channel));
+         /*printf("\n-----");*/
       }
     }
   }
 
   ip_mat_free(aux);
+  return result;
+}
+
+ip_mat * create_sharpen_filter()
+{
+  int channel;
+  ip_mat *result = ip_mat_create(3,3,3,0.0);
+
+  for(channel = 0; channel < 3; channel++)
+  {
+    set_val(result, 0, 0, channel, 0.0); set_val(result, 0, 1, channel, -1.0); set_val(result, 0, 2, channel, 0.0);
+    set_val(result, 1, 0, channel, -1.0); set_val(result, 1, 1, channel, 5.0); set_val(result, 1, 2, channel, -1.0);
+    set_val(result, 2, 0, channel, 0.0); set_val(result, 2, 1, channel, -1.0); set_val(result, 2, 2, channel, 0.0);
+  }
+
+  return result;
+}
+
+ip_mat * create_edge_filter()
+{
+  int channel;
+  ip_mat *result = ip_mat_create(3,3,3,0.0);
+
+  for(channel = 0; channel < 3; channel++)
+  {
+    set_val(result, 0, 0, channel, -1.0); set_val(result, 0, 1, channel, -1.0); set_val(result, 0, 2, channel, -1.0);
+    set_val(result, 1, 0, channel, -1.0); set_val(result, 1, 1, channel, 8.0); set_val(result, 1, 2, channel, -1.0);
+    set_val(result, 2, 0, channel,-1.0); set_val(result, 2, 1, channel, -1.0); set_val(result, 2, 2, channel, -1.0);
+  }
+
+  return result;
+}
+
+ip_mat * create_emboss_filter()
+{
+  int channel;
+  ip_mat *result = ip_mat_create(3,3,3,0.0);
+
+  for(channel = 0; channel < 3; channel++)
+  {
+    set_val(result, 0, 0, channel, -2.0); set_val(result, 0, 1, channel, -1.0); set_val(result, 0, 2, channel, 0.0);
+    set_val(result, 1, 0, channel, -1.0); set_val(result, 1, 1, channel, 1.0); set_val(result, 1, 2, channel, 1.0);
+    set_val(result, 2, 0, channel, 0.0); set_val(result, 2, 1, channel, 1.0); set_val(result, 2, 2, channel, 2.0);
+  }
+
   return result;
 }
