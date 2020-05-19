@@ -14,7 +14,7 @@ Bitmap* test(char const *source1, char const *source2, char const *destination)
   test2 = bm_load(source2); //carico file input
   test2_ipmat = bitmap_to_ip_mat(test2); //converto in ip_mat
 
-  result = ip_mat_concat(test1_ipmat,test2_ipmat,2); //FACCIO ROBA
+  result = ip_mat_corrupt(test1_ipmat,100); //FACCIO ROBA
 
   result_ = ip_mat_to_bitmap(result);//converto in bitmap
 
@@ -29,7 +29,7 @@ Bitmap* test(char const *source1, char const *source2, char const *destination)
 
 int main(){
 
-    char *source1 = "flower.bmp";
+    char *source1 = "flower2.bmp";
     char *source2 = "flower.bmp";
     char *destination = "concat_2_flower.bmp";
     Bitmap *out = test(source1, source2, destination);

@@ -528,7 +528,7 @@ ip_mat * ip_mat_corrupt(ip_mat * a, float amount){
         {
             for (col=0; col<(a->w); col++)
             {
-                set_val(result, row, col, channel, (get_normal_random(get_val(a,row,col,channel),amount/3)));
+                set_val(result, row, col, channel, get_val(a,row,col,channel)+(get_normal_random(0,amount/2)));//o get_normal_random(get_val(a,row,col,channel),amount/2)
             }
         }
     }
