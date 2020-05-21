@@ -2,11 +2,25 @@
 #include <math.h>
 #include <stdio.h>
 #include "ip_lib.h"
+#include <string.h>
 
 #define COUNT_TEST 4
+#define FORMAT ".bmp"
 
-ip_mat * allocate_ipmat_array(int length);
-Bitmap * allocate_Bitmap_array(int length);
+
+char * concat_string(char const *string1, char const *string2)
+{
+  int i;
+  char *result = (char *) malloc(sizeof(string1) + sizeof(string2));
+  result = strcpy(result, string1);
+  for(i = 0; i < strlen(string2); i++)
+  {
+    result[i + strlen(string1)] = string2[i];
+  }
+  result[++i] = 0;
+
+  return result;
+}
 
 void test(char const *source, char const *destination, int select)
 {
@@ -47,7 +61,7 @@ void test(char const *source, char const *destination, int select)
 
 int main(){
     int i;
-    char source[] = "flower.bmp";
+    char source[] = concat_string("flower",FORMAT);
     char destination[][30] = {"sharpen_flower.bmp", "edge_flower.bmp", "emboss_flower.bmp", "average_filter.bmp"};
     for(i = 0; i < COUNT_TEST; i++)
     {
