@@ -656,3 +656,15 @@ ip_mat * create_emboss_filter()
 
   return result;
 }
+
+ip_mat * create_average_filter(unsigned int w,unsigned int h,unsigned int k){
+    float c;
+    
+    c=1.0/(w*h);
+    
+    ip_mat *result = ip_mat_create(h,w,k,c);
+    
+    
+    return result;
+}
+   

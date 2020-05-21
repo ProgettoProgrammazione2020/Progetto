@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include "ip_lib.h"
 
-#define COUNT_TEST 3
+#define COUNT_TEST 4
 
 ip_mat * allocate_ipmat_array(int length);
 Bitmap * allocate_Bitmap_array(int length);
@@ -27,6 +27,8 @@ void test(char const *source, char const *destination, int select)
             break;
     case 2: filter = create_emboss_filter();
             break;
+    case 3: filter = create_average_filter(3,3,3);
+            break;
   }
 
   result = ip_mat_convolve(test_ipmat,filter);
@@ -46,7 +48,7 @@ void test(char const *source, char const *destination, int select)
 int main(){
     int i;
     char source[] = "flower.bmp";
-    char destination[][30] = {"sharpen_flower.bmp", "edge_flower.bmp", "emboss_flower.bmp"};
+    char destination[][30] = {"sharpen_flower.bmp", "edge_flower.bmp", "emboss_flower.bmp", "average_filter.bmp"};
     for(i = 0; i < COUNT_TEST; i++)
     {
       printf("%s --> %s\n", source, destination[i]);
