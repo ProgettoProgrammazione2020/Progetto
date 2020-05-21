@@ -627,9 +627,9 @@ ip_mat * create_sharpen_filter()
 {
   ip_mat *result = ip_mat_create(3,3,1,0.0);
 
-  set_val(result, 0, 0, channel, 0.0); set_val(result, 0, 1, channel, -1.0); set_val(result, 0, 2, channel, 0.0);
-  set_val(result, 1, 0, channel, -1.0); set_val(result, 1, 1, channel, 5.0); set_val(result, 1, 2, channel, -1.0);
-  set_val(result, 2, 0, channel, 0.0); set_val(result, 2, 1, channel, -1.0); set_val(result, 2, 2, channel, 0.0);
+  set_val(result, 0, 0, 0, 0.0); set_val(result, 0, 1, 0, -1.0); set_val(result, 0, 2, 0, 0.0);
+  set_val(result, 1, 0, 0, -1.0); set_val(result, 1, 1, 0, 5.0); set_val(result, 1, 2, 0, -1.0);
+  set_val(result, 2, 0, 0, 0.0); set_val(result, 2, 1, 0, -1.0); set_val(result, 2, 2, 0, 0.0);
 
   return result;
 }
@@ -638,33 +638,30 @@ ip_mat * create_edge_filter()
 {
   ip_mat *result = ip_mat_create(3,3,1,0.0);
 
-  set_val(result, 0, 0, channel, -1.0); set_val(result, 0, 1, channel, -1.0); set_val(result, 0, 2, channel, -1.0);
-  set_val(result, 1, 0, channel, -1.0); set_val(result, 1, 1, channel, 8.0); set_val(result, 1, 2, channel, -1.0);
-  set_val(result, 2, 0, channel,-1.0); set_val(result, 2, 1, channel, -1.0); set_val(result, 2, 2, channel, -1.0);
+  set_val(result, 0, 0, 0, -1.0); set_val(result, 0, 1, 0, -1.0); set_val(result, 0, 2, 0, -1.0);
+  set_val(result, 1, 0, 0, -1.0); set_val(result, 1, 1, 0, 8.0); set_val(result, 1, 2, 0, -1.0);
+  set_val(result, 2, 0, 0,-1.0); set_val(result, 2, 1, 0, -1.0); set_val(result, 2, 2, 0, -1.0);
 
   return result;
 }
 
 ip_mat * create_emboss_filter()
 {
-  int channel;
   ip_mat *result = ip_mat_create(3,3,1,0.0);
 
-  set_val(result, 0, 0, channel, -2.0); set_val(result, 0, 1, channel, -1.0); set_val(result, 0, 2, channel, 0.0);
-  set_val(result, 1, 0, channel, -1.0); set_val(result, 1, 1, channel, 1.0); set_val(result, 1, 2, channel, 1.0);
-  set_val(result, 2, 0, channel, 0.0); set_val(result, 2, 1, channel, 1.0); set_val(result, 2, 2, channel, 2.0);
+  set_val(result, 0, 0, 0, -2.0); set_val(result, 0, 1, 0, -1.0); set_val(result, 0, 2, 0, 0.0);
+  set_val(result, 1, 0, 0, -1.0); set_val(result, 1, 1, 0, 1.0); set_val(result, 1, 2, 0, 1.0);
+  set_val(result, 2, 0, 0, 0.0); set_val(result, 2, 1, 0, 1.0); set_val(result, 2, 2, 0, 2.0);
 
   return result;
 }
 
-ip_mat * create_average_filter(unsigned int w,unsigned int h,unsigned int k){
+ip_mat * create_average_filter(unsigned int w,unsigned int h,unsigned int k)
+{
     float c;
-    
     c=1.0/(w*h);
-    
+
     ip_mat *result = ip_mat_create(h,w,k,c);
-    
-    
+
     return result;
 }
-   
