@@ -61,7 +61,7 @@ void test(char const *source, char const *destination, int select)
 
 int main(){
     int i;
-    char source[] = concat_string("flower",FORMAT);
+    char source[] = "flower.bmp";
     char destination[][30] = {"sharpen_flower.bmp", "edge_flower.bmp", "emboss_flower.bmp", "average_filter.bmp"};
     for(i = 0; i < COUNT_TEST; i++)
     {

@@ -612,12 +612,12 @@ ip_mat * ip_mat_convolve(ip_mat * a, ip_mat * f)
          *printf("DIMENISONI SOURCE: %d, %d, %d \n", a->h, a->w, a->k);
          *printf("DIMENISONI FILTER: %d, %d, %d \n", f->h, f->w, f->k);
          *printf("PIXEL START: %d, %d, %d\n\n", row, col, channel);*/
-         set_val(result, row, col, channel, calculate_convolve(a, f, row, col));
+         set_val(result, row, col, channel, calculate_convolve(aux, f, row, col));
          /*printf("\n-----");*/
       }
     }
   }
-  rescale(result, 255);
+  /*rescale(result, 255);*/
 
   ip_mat_free(aux);
   return result;
