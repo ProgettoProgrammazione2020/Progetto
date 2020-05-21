@@ -155,7 +155,7 @@ ip_mat * create_edge_filter();
 ip_mat * create_emboss_filter();
 
 /* Crea un filtro medio per la rimozione del rumore */
-ip_mat * create_average_filter(int w, int h, int k);
+ip_mat * create_average_filter(unsigned int w, unsigned int h, unsigned int k);
 
 /* Crea un filtro gaussiano per la rimozione del rumore */
 ip_mat * create_gaussian_filter(int w, int h, int k, float sigma);
