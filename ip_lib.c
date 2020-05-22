@@ -9,27 +9,7 @@
 /*
 *FUNZIONI AUSILIARIE
 */
-void normalize_rgb(ip_mat * a) /*controllo se i valori sono nel range 0-255; se sono fuori range vengono portati a 0 (se sono negativi) e a 255 (se sono >255) */
-{
-    int x, y, z;
-    for (x=0; x<a->h; x++)
-    {
-        for (y=0; y<a->w; y++)
-        {
-            for (z=0; z<a->k; z++)
-            {
-                if(a->data[x][y][z]  >255)
-                {
-                    set_val(a,x,y,z,255);
-                }
-                if (a->data[x][y][z] <0)
-                {
-                    set_val(a,x,y,z,0);
-                }
-            }
-        }
-    }
-}
+
 
 float calculate_convolve(ip_mat * a, ip_mat * f, int row_start, int col_start)
 {
@@ -588,7 +568,6 @@ ip_mat * ip_mat_brighten(ip_mat * a, float bright)
 {
     ip_mat *result;
     result = ip_mat_add_scalar (a, bright);
-    normalize_rgb(result);
     return result;
 }
 
@@ -664,4 +643,50 @@ ip_mat * create_average_filter(unsigned int w,unsigned int h,unsigned int k)
     ip_mat *result = ip_mat_create(h,w,k,c);
 
     return result;
+}
+
+void rescale(ip_mat * t, float new_max)
+{
+    int channel, row, col;
+    float appoggio;
+    appoggio = 0;
+    compute_stats(t);    
+    for(channel = 0; channel < t->k; channel++)
+    {
+        for(row = 0; row < t->h; row++)
+        {   
+            for(col = 0; col < t->w; col++)
+            {   
+                appoggio = (get_val(t,row, col, channel) - t->stat[channel].min) / ((t->stat[channel].max) - (t->stat[channel].min));
+                set_val(t,row,col,channel, appoggio*new_max);
+            }
+        
+        }
+    }
+}
+
+void clamp(ip_mat * t, float low, float high)
+{
+    int channel, row, col;
+    float appoggio;
+    appoggio = 0;
+    for(channel = 0; channel < t->k; channel++)
+    {
+        for(row = 0; row < t->h; row++)
+        {   
+            for(col = 0; col < t->w; col++)
+            {   
+                appoggio = get_val(t,row, col, channel);
+                if(appoggio > high)
+                {
+                    set_val(t,row,col,channel,high);
+                }
+                if (appoggio < low)
+                {
+                    set_val(t,row,col,channel,low);
+                }
+            }
+        
+        }
+    }  
 }
