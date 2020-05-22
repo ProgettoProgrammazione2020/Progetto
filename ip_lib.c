@@ -11,14 +11,12 @@
 */
 
 
-float calculate_convolve(ip_mat * a, ip_mat * f, int row_start, int col_start)
+float calculate_convolve(ip_mat * a, ip_mat * f, int row_start, int col_start, int selected_channel)
 {
   int channel, row, col;
   /*float a_val, f_val;*/
   float sum = 0.0;
 
-  for(channel = 0; channel < 2; channel++)
-  {
     for(row = 0; row < f->h; row++)
     {
       for(col = 0; col < f->w; col++)
@@ -33,10 +31,9 @@ float calculate_convolve(ip_mat * a, ip_mat * f, int row_start, int col_start)
         *printf("sum: ");
         *sum += a_val * f_val;
         *printf("%f\n\n", sum);  /* END*/
-        sum += get_val(a, row + row_start, col + col_start, channel) * get_val(f, row, col, 0);
+        sum += get_val(a, row + row_start, col + col_start, selected_channel) * get_val(f, row, col, 0);
       }
     }
-  }
 
   return sum;
 }
@@ -583,15 +580,15 @@ ip_mat * ip_mat_convolve(ip_mat * a, ip_mat * f)
 
   for(channel = 0; channel < aux->k; channel++)
   {
-    for(row = 0; row < aux->h - f->h - 1; row++)
+    for(row = 0; (row+(f->h)) <= (aux->h); row++)
     {
-      for(col = 0; col < aux->w - f->w - 1; col++)
+      for(col = 0; (col+(f->h)) <= (aux->w); col++)
       {
         /* printf("-----\n");
          *printf("DIMENISONI SOURCE: %d, %d, %d \n", a->h, a->w, a->k);
          *printf("DIMENISONI FILTER: %d, %d, %d \n", f->h, f->w, f->k);
          *printf("PIXEL START: %d, %d, %d\n\n", row, col, channel);*/
-         set_val(result, row, col, channel, calculate_convolve(aux, f, row, col));
+         set_val(result, row, col, channel, calculate_convolve(aux, f, row, col, channel));
          /*printf("\n-----");*/
       }
     }
@@ -689,4 +686,45 @@ void clamp(ip_mat * t, float low, float high)
         
         }
     }  
+}
+
+ip_mat * create_gaussian_filter(int w, int h, int k, float sigma){
+    if(sigma<=0){
+        printf("[create_gaussian_filter] Errore: sigma non può essere 0\n");
+        exit(1);
+    }else{
+        int channel, row, col;
+        int i,j;
+        float sum=0.0;
+        float op,x,y;
+        ip_mat *result = ip_mat_create(h,w,k,0.0);
+        i=h/2;
+        j=w/2;
+        for(channel = 0; channel < k; channel++)
+        {
+            sum=0.0;
+            for(row = 0; row < h; row++)
+            {
+                for(col = 0; col < w; col++)
+                {
+                    x=row-i;
+                    y=col-j;
+                    op=(1/(2*PI*sigma))*exp(-((pow(x,2)+pow(y,2))/(2*pow(sigma,2))));
+                    set_val(result,row,col,channel,op);
+                    sum=sum+op;
+                }
+            }
+        }
+        for(channel = 0; channel < k; channel++)
+        {
+            for(row = 0; row < h; row++)
+            {
+                for(col = 0; col < w; col++)
+                {
+                    set_val(result,row,col,channel,(1/sum)*(get_val(result,row,col,channel)));
+                }
+            }
+        }
+        return result;
+    }
 }

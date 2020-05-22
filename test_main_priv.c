@@ -4,7 +4,7 @@
 #include "ip_lib.h"
 #include <string.h>
 
-#define COUNT_TEST 4
+#define COUNT_TEST 5
 #define FORMAT ".bmp"
 
 
@@ -43,9 +43,13 @@ void test(char const *source, char const *destination, int select)
             break;
     case 3: filter = create_average_filter(3,3,3);
             break;
+    case 4: filter = create_gaussian_filter(9,9,3,5.0);
+            break;
   }
 
   result = ip_mat_convolve(test_ipmat,filter);
+  
+  clamp(result,0.0,255.0);
 
   result_ = ip_mat_to_bitmap(result); /*converto in bitmap*/
 
@@ -62,7 +66,7 @@ void test(char const *source, char const *destination, int select)
 int main(){
     int i;
     char source[] = "flower.bmp";
-    char destination[][30] = {"sharpen_flower.bmp", "edge_flower.bmp", "emboss_flower.bmp", "average_filter.bmp"};
+    char destination[][30] = {"sharpen_flower.bmp", "edge_flower.bmp", "emboss_flower.bmp", "average_filter.bmp", "gaussian_filter.bmp"};
     for(i = 0; i < COUNT_TEST; i++)
     {
       printf("%s --> %s\n", source, destination[i]);
