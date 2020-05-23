@@ -580,9 +580,9 @@ ip_mat * ip_mat_convolve(ip_mat * a, ip_mat * f)
 
   for(channel = 0; channel < aux->k; channel++)
   {
-    for(row = 0; (row+(f->h)) <= (aux->h); row++)
+    for(row = 0; row + f->h < aux->h; row++)
     {
-      for(col = 0; (col+(f->h)) <= (aux->w); col++)
+      for(col = 0; col + f->h < aux->w; col++)
       {
         /* printf("-----\n");
          *printf("DIMENISONI SOURCE: %d, %d, %d \n", a->h, a->w, a->k);
@@ -593,7 +593,8 @@ ip_mat * ip_mat_convolve(ip_mat * a, ip_mat * f)
       }
     }
   }
-  /*rescale(result, 255);*/
+  clamp(result, 0,255);
+  rescale(result, 255);  
 
   ip_mat_free(aux);
   return result;
@@ -647,17 +648,17 @@ void rescale(ip_mat * t, float new_max)
     int channel, row, col;
     float appoggio;
     appoggio = 0;
-    compute_stats(t);    
+    compute_stats(t);
     for(channel = 0; channel < t->k; channel++)
     {
         for(row = 0; row < t->h; row++)
-        {   
+        {
             for(col = 0; col < t->w; col++)
-            {   
+            {
                 appoggio = (get_val(t,row, col, channel) - t->stat[channel].min) / ((t->stat[channel].max) - (t->stat[channel].min));
                 set_val(t,row,col,channel, appoggio*new_max);
             }
-        
+
         }
     }
 }
@@ -670,9 +671,9 @@ void clamp(ip_mat * t, float low, float high)
     for(channel = 0; channel < t->k; channel++)
     {
         for(row = 0; row < t->h; row++)
-        {   
+        {
             for(col = 0; col < t->w; col++)
-            {   
+            {
                 appoggio = get_val(t,row, col, channel);
                 if(appoggio > high)
                 {
@@ -683,9 +684,9 @@ void clamp(ip_mat * t, float low, float high)
                     set_val(t,row,col,channel,low);
                 }
             }
-        
+
         }
-    }  
+    }
 }
 
 ip_mat * create_gaussian_filter(int w, int h, int k, float sigma){
