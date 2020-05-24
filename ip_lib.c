@@ -11,7 +11,7 @@
 */
 float get_val(ip_mat * a, unsigned int i,unsigned int j,unsigned int k)
 {
-    if(i < a->h && j < a->w && k < a->k){  /* j>=0 and k>=0 and i>=0 is non sense*/
+    if((i < a->h) && (j < a->w) && (k < a->k)){  
         return a->data[i][j][k];
     }else{
         printf("[get_val]Errore: coordinate inserite non corrette\n");
