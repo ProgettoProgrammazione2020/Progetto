@@ -143,7 +143,7 @@ ip_mat * ip_mat_convolve(ip_mat * a, ip_mat * f);
  * con valori nulli sui bordi corrispondenti al padding e l'immagine "a" riportata
  * nel centro
  * */
-ip_mat * ip_mat_padding(ip_mat * a, int pad_h, int pad_w);
+ip_mat * ip_mat_padding(ip_mat * a, unsigned int pad_h, unsigned int pad_w);
 
 /* Crea un filtro di sharpening */
 ip_mat * create_sharpen_filter();
@@ -158,7 +158,7 @@ ip_mat * create_emboss_filter();
 ip_mat * create_average_filter(unsigned int w, unsigned int h, unsigned int k);
 
 /* Crea un filtro gaussiano per la rimozione del rumore */
-ip_mat * create_gaussian_filter(int w, int h, int k, float sigma);
+ip_mat * create_gaussian_filter(unsigned int w, unsigned int h, unsigned int k, float sigma);
 
 /* Effettua una riscalatura dei dati tale che i valori siano in [0,new_max].
  * Utilizzate il metodo compute_stat per ricavarvi il min, max per ogni canale.
