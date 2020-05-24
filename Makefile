@@ -1,33 +1,32 @@
-STANDARD_FLAGS = --ansi --pedantic -g3 -O3 -std=gnu89
-WARNING_FLAGS = -Wall -Wextra
-LIBRARIES_FLAGS = -lm
-SANITIZER = -fsanitize=address -fsanitize=undefined
-SAFE = $(STANDARD_FLAGS) $(WARNING_FLAGS) $(LIBRARIES_FLAGS)
-UNSAFE = $(SAFE) $(SANITIZER)
+run_main: test
+	./test
 
+valgrind: test.o ip_lib.o bmp.o
+	gcc test.o ip_lib.o bmp.o -otest -Wall --ansi --pedantic -ggdb -lm -g -O1
+	valgrind -v --leak-check=full --track-origins=yes ./test
 
-test: test_main_priv.o ip_lib.o bmp.o
-	gcc test_main_priv.o ip_lib.o bmp.o -o test -g -O1 -lm
+test: test.o ip_lib.o bmp.o
+	gcc test.o ip_lib.o bmp.o -otest -Wall --ansi --pedantic -lm -g3 -O3 -fsanitize=address -std=gnu89 -Wextra
 
-main: main_iplib.o ip_lib.o bmp.o
-	gcc main_iplib.o ip_lib.o bmp.o -o main -g -O1 -lm
+test.o: test_main_priv.c ip_lib.h
+	gcc test_main_priv.c -otest.o -c -Wall --ansi --pedantic -ggdb
+	
+ip_lib.o: ip_lib.c ip_lib.h
+	gcc ip_lib.c -oip_lib.o -c -Wall --ansi --pedantic -ggdb
+	
+run_test_bmp: test_bmp
+	./test_bmp
 
-main_iplib.o: main_iplib.c ip_lib.h bmp.h
-	gcc main_iplib.c -o main_iplib.o -c -lm
+test_bmp: test_bmp.o bmp.o
+	gcc test_bmp.o bmp.o -otest_bmp -Wall -lm
+	
+test_bmp.o: test_bmp.c
+	gcc test_bmp.c -otest_bmp.o -Wall -c
+	
+bmp.o: bmp.c bmp.h
+	gcc bmp.c -obmp.o -Wall -c
 
-test_main_priv.o: test_bmp.c ip_lib.h bmp.h
-	gcc test_main_priv.c -o test_main_priv.o -c -lm
-
-ip_lib.o: ip_lib.c bmp.h
-	gcc ip_lib.c -o ip_lib.o -lm -c $(SAFE) -fsanitize=undefined
-
-bmp.o: bmp.c
-	gcc bmp.c -o bmp.o -lm -c
-
-clean_test:
+clear:
 	rm *.o
 	rm test
-
-clean_main:
-	rm *.o
-	rm main
+	rm test_bmp
