@@ -4,32 +4,36 @@
 #include "ip_lib.h"
 #include <string.h>
 
-#define COUNT_TEST 5
-#define FORMAT ".bmp"
+#define COUNT_FILTER 5
+#define COUNT_SOURCE 5
+#define DIRECTORY "img/"
 
 
-char * concat_string(char const *string1, char const *string2)
+void get_name(char const *source, char const *prefix, char *name)
 {
   int i;
-  char *result = (char *) malloc(sizeof(string1) + sizeof(string2));
-  result = strcpy(result, string1);
-  for(i = 0; i < strlen(string2); i++)
+  for(i = 0; i < strlen(prefix); i++)
   {
-    result[i + strlen(string1)] = string2[i];
+    name[i] = prefix[i];
   }
-  result[++i] = 0;
-
-  return result;
+  for(i = strlen(prefix); i < strlen(prefix) + strlen(source); i++)
+  {
+    name[i] = source[i - strlen(prefix)];
+  }
+  name[i] = 0;
 }
 
-void test(char const *source, char const *destination, int select)
+void test(char const *source, char const *file_name, int select)
 {
-  ip_mat *filter = NULL;
-
-  ip_mat *test_ipmat = NULL, *result = NULL;
+  char src[40] = "";
+  ip_mat *test_ipmat = NULL, *result = NULL, *filter = NULL;
   Bitmap *test_Bitmap = NULL, *result_ = NULL;
 
-  test_Bitmap = bm_load(source); /*carico il file*/
+  get_name(source, DIRECTORY, src);
+
+  printf("src: %s\n",src);
+
+  test_Bitmap = bm_load(src); /*carico il file*/
 
   test_ipmat = bitmap_to_ip_mat(test_Bitmap);/*converto in ip_mat*/
 
@@ -48,7 +52,7 @@ void test(char const *source, char const *destination, int select)
   }
 
   result = ip_mat_convolve(test_ipmat,filter);
-  
+
   clamp(result,0.0,255.0);
 
   result_ = ip_mat_to_bitmap(result); /*converto in bitmap*/
@@ -58,19 +62,24 @@ void test(char const *source, char const *destination, int select)
   ip_mat_free(filter);
   bm_free(test_Bitmap);
 
-  bm_save(result_,destination);/*salvo l'immagine su filter*/
+  bm_save(result_,file_name);/*salvo l'immagine su filter*/
   bm_free(result_);
 
 }
 
 int main(){
-    int i;
-    char source[] = "flower.bmp";
-    char destination[][30] = {"sharpen_flower.bmp", "edge_flower.bmp", "emboss_flower.bmp", "average_filter.bmp", "gaussian_filter.bmp"};
-    for(i = 0; i < COUNT_TEST; i++)
+    int i, j;
+    char name[50];
+    char source[][30] = {"flower.bmp", "fullmoon.bmp", "flower2.bmp", "caf.bmp", "mongolfiere.bmp"};
+    char filter[][30] = {"sharpen_", "edge_", "emboss_", "average_", "gaussian_"};
+    for(j = 0; j < COUNT_SOURCE; j++)
     {
-      printf("%s --> %s\n", source, destination[i]);
-      test(source, destination[i],i);
+      for(i = 0; i < COUNT_FILTER; i++)
+      {
+        get_name(source[j], filter[i], name);
+        printf("%s --> %s\n", source[j], name);
+        test(source[j], name, i);
+      }
     }
     return 0;
 
