@@ -3,7 +3,7 @@ STANDARDS = --ansi --pedantic -std=gnu89 -g3 -O3
 WARNINGS = -Wall -Wextra
 SANITIZER = -fsanitize=address -fsanitize=undefined
 TEST = $(WARNINGS) $(STANDARDS) $(LIBRARIES) $(SANITIZER)
-VALGRIND = -Wall --ansi --pedantic -ggdb  -g -O1 $(LIBRARIES)
+VALGRIND = -Wall --ansi --pedantic -ggdb -g -O1 $(LIBRARIES)
 
 test: test.o ip_lib.o bmp.o
 	gcc test.o ip_lib.o bmp.o -otest $(TEST)

@@ -11,7 +11,7 @@
 */
 float get_val(ip_mat * a, unsigned int i,unsigned int j,unsigned int k)
 {
-    if((i < a->h) && (j < a->w) && (k < a->k)){  
+    if((i < a->h) && (j < a->w) && (k < a->k)){
         return a->data[i][j][k];
     }else{
         printf("[get_val]Errore: coordinate inserite non corrette\n");
@@ -116,13 +116,13 @@ float calculate_convolve(ip_mat * a, ip_mat * f, unsigned int row_start, unsigne
   unsigned int row, col;
   float sum = 0.0;
 
-    for(row = 0; row < f->h; row++)
+  for(row = 0; row < f->h; row++)
+  {
+    for(col = 0; col < f->w; col++)
     {
-      for(col = 0; col < f->w; col++)
-      {
-        sum += get_val(a, row + row_start, col + col_start, selected_channel) * get_val(f, row, col, 0);
-      }
+      sum += get_val(a, row + row_start, col + col_start, selected_channel) * get_val(f, row, col, selected_channel);
     }
+  }
 
   return sum;
 }
@@ -574,8 +574,6 @@ ip_mat * ip_mat_convolve(ip_mat * a, ip_mat * f)
       }
     }
   }
-  clamp(result, 0,255);
-  rescale(result, 255);
 
   ip_mat_free(aux);
   return result;
@@ -583,33 +581,45 @@ ip_mat * ip_mat_convolve(ip_mat * a, ip_mat * f)
 
 ip_mat * create_sharpen_filter()
 {
-  ip_mat *result = ip_mat_create(3,3,1,0.0);
+  unsigned int channel;
+  ip_mat *result = ip_mat_create(3,3,3,0.0);
 
-  set_val(result, 0, 0, 0, 0.0); set_val(result, 0, 1, 0, -1.0); set_val(result, 0, 2, 0, 0.0);
-  set_val(result, 1, 0, 0, -1.0); set_val(result, 1, 1, 0, 5.0); set_val(result, 1, 2, 0, -1.0);
-  set_val(result, 2, 0, 0, 0.0); set_val(result, 2, 1, 0, -1.0); set_val(result, 2, 2, 0, 0.0);
+  for(channel = 0; channel < 3; channel++)
+  {
+    set_val(result, 0, 0, channel, 0.0); set_val(result, 0, 1, channel, -1.0); set_val(result, 0, 2, channel, 0.0);
+    set_val(result, 1, 0, channel, -1.0); set_val(result, 1, 1, channel, 5.0); set_val(result, 1, 2, channel, -1.0);
+    set_val(result, 2, 0, channel, 0.0); set_val(result, 2, 1, channel, -1.0); set_val(result, 2, 2, channel, 0.0);
+  }
 
   return result;
 }
 
 ip_mat * create_edge_filter()
 {
-  ip_mat *result = ip_mat_create(3,3,1,0.0);
+  unsigned int channel;
+  ip_mat *result = ip_mat_create(3,3,3,0.0);
 
-  set_val(result, 0, 0, 0, -1.0); set_val(result, 0, 1, 0, -1.0); set_val(result, 0, 2, 0, -1.0);
-  set_val(result, 1, 0, 0, -1.0); set_val(result, 1, 1, 0, 8.0); set_val(result, 1, 2, 0, -1.0);
-  set_val(result, 2, 0, 0,-1.0); set_val(result, 2, 1, 0, -1.0); set_val(result, 2, 2, 0, -1.0);
+  for(channel = 0; channel < 3; channel++)
+  {
+    set_val(result, 0, 0, channel, -1.0); set_val(result, 0, 1, channel, -1.0); set_val(result, 0, 2, channel, -1.0);
+    set_val(result, 1, 0, channel, -1.0); set_val(result, 1, 1, channel, 8.0); set_val(result, 1, 2, channel, -1.0);
+    set_val(result, 2, 0, channel,-1.0); set_val(result, 2, 1, channel, -1.0); set_val(result, 2, 2, channel, -1.0);
+  }
 
   return result;
 }
 
 ip_mat * create_emboss_filter()
 {
-  ip_mat *result = ip_mat_create(3,3,1,0.0);
+  unsigned int channel;
+  ip_mat *result = ip_mat_create(3,3,3,0.0);
 
-  set_val(result, 0, 0, 0, -2.0); set_val(result, 0, 1, 0, -1.0); set_val(result, 0, 2, 0, 0.0);
-  set_val(result, 1, 0, 0, -1.0); set_val(result, 1, 1, 0, 1.0); set_val(result, 1, 2, 0, 1.0);
-  set_val(result, 2, 0, 0, 0.0); set_val(result, 2, 1, 0, 1.0); set_val(result, 2, 2, 0, 2.0);
+  for(channel = 0; channel < 3; channel++)
+  {
+    set_val(result, 0, 0, channel, -2.0); set_val(result, 0, 1, channel, -1.0); set_val(result, 0, 2, channel, 0.0);
+    set_val(result, 1, 0, channel, -1.0); set_val(result, 1, 1, channel, 1.0); set_val(result, 1, 2, channel, 1.0);
+    set_val(result, 2, 0, channel, 0.0); set_val(result, 2, 1, channel, 1.0); set_val(result, 2, 2, channel, 2.0);
+  }
 
   return result;
 }

@@ -5,7 +5,7 @@
 #include <string.h>
 
 #define COUNT_FILTER 5
-#define COUNT_SOURCE 5
+#define COUNT_SOURCE 6
 #define DIRECTORY "img/"
 
 
@@ -30,8 +30,6 @@ void test(char const *source, char const *file_name, int select)
   Bitmap *test_Bitmap = NULL, *result_ = NULL;
 
   get_name(source, DIRECTORY, src);
-
-  printf("src: %s\n",src);
 
   test_Bitmap = bm_load(src); /*carico il file*/
 
@@ -70,7 +68,7 @@ void test(char const *source, char const *file_name, int select)
 int main(){
     int i, j;
     char name[50];
-    char source[][30] = {"flower.bmp", "fullmoon.bmp", "flower2.bmp", "caf.bmp", "mongolfiere.bmp"};
+    char source[][30] = {"flower.bmp", "fullmoon.bmp", "flower2.bmp", "caf.bmp", "mongolfiere.bmp", "Culo.bmp"};
     char filter[][30] = {"sharpen_", "edge_", "emboss_", "average_", "gaussian_"};
     for(j = 0; j < COUNT_SOURCE; j++)
     {
