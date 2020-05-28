@@ -4,9 +4,16 @@ WARNINGS = -Wall -Wextra
 SANITIZER = -fsanitize=address -fsanitize=undefined
 TEST = $(WARNINGS) $(STANDARDS) $(LIBRARIES) $(SANITIZER)
 VALGRIND = -Wall --ansi --pedantic -ggdb -g -O1 $(LIBRARIES)
+NAME = -o main_iplib
+
+main: main.o ip_lib.o bmp.o
+	gcc main.o ip_lib.o bmp.o $(NAME) -omain_iplib $(TEST)
 
 test: test.o ip_lib.o bmp.o
 	gcc test.o ip_lib.o bmp.o -otest $(TEST)
+
+main.o: main_iplib.c ip_lib.h
+	gcc main_iplib.c -omain.o -c -Wall --ansi --pedantic -ggdb
 
 test.o: test_main_priv.c ip_lib.h
 	gcc test_main_priv.c -otest.o -c -Wall --ansi --pedantic -ggdb

@@ -1,5 +1,9 @@
 /*
- Created by Sebastiano Vascon on 23/03/20.
+ ID GRUPPO: 59
+ Mattia Castellani 881427
+ Andreea Nechifor 882345
+ Marco Pastrello 881679
+ Niccolò Simonato 879993
 */
 
 #include <stdio.h>
@@ -11,7 +15,8 @@
 */
 float get_val(ip_mat * a, unsigned int i,unsigned int j,unsigned int k)
 {
-    if((i < a->h) && (j < a->w) && (k < a->k)){
+    if((i < a->h) && (j < a->w) && (k < a->k))
+    {
         return a->data[i][j][k];
     }else{
         printf("[get_val]Errore: coordinate inserite non corrette\n");
@@ -21,7 +26,8 @@ float get_val(ip_mat * a, unsigned int i,unsigned int j,unsigned int k)
 
 void set_val(ip_mat * a, unsigned int i,unsigned int j,unsigned int k, float v)
 {
-    if(i < a->h && j < a->w && k < a->k){
+    if(i < a->h && j < a->w && k < a->k)
+    {
         a->data[i][j][k]=v;
     }else{
         printf("[set_val]Errore: coordinate inserite non corrette\n");
@@ -29,7 +35,8 @@ void set_val(ip_mat * a, unsigned int i,unsigned int j,unsigned int k, float v)
     }
 }
 
-void ip_mat_show(ip_mat * t){
+void ip_mat_show(ip_mat * t)
+{
     unsigned int i,l,j;
     printf("Matrix of size %d x %d x %d (hxwxk)\n",t->h,t->w,t->k);
     for (l = 0; l < t->k; l++) {
@@ -44,7 +51,8 @@ void ip_mat_show(ip_mat * t){
     }
 }
 
-void ip_mat_show_stats(ip_mat * t){
+void ip_mat_show_stats(ip_mat * t)
+{
     unsigned int k;
 
     compute_stats(t);
@@ -57,7 +65,8 @@ void ip_mat_show_stats(ip_mat * t){
     }
 }
 
-ip_mat * bitmap_to_ip_mat(Bitmap * img){
+ip_mat * bitmap_to_ip_mat(Bitmap * img)
+{
     unsigned int i=0,j=0;
 
     unsigned char R,G,B;
@@ -81,7 +90,8 @@ ip_mat * bitmap_to_ip_mat(Bitmap * img){
     return out;
 }
 
-Bitmap * ip_mat_to_bitmap(ip_mat * t){
+Bitmap * ip_mat_to_bitmap(ip_mat * t)
+{
 
     Bitmap *b = bm_create(t->w,t->h);
 
@@ -98,7 +108,8 @@ Bitmap * ip_mat_to_bitmap(ip_mat * t){
     return b;
 }
 
-float get_normal_random(float media, float std){
+float get_normal_random(float media, float std)
+{
 
     float y1 = ( (float)(rand()) + 1. )/( (float)(RAND_MAX) + 1. );
     float y2 = ( (float)(rand()) + 1. )/( (float)(RAND_MAX) + 1. );
@@ -127,7 +138,8 @@ float calculate_convolve(ip_mat * a, ip_mat * f, unsigned int row_start, unsigne
   return sum;
 }
 
-void control_malloc (int a){
+void control_malloc (int a)
+{
     if(a){
         printf("Errore: malloc non riuscita!\n");
         exit(1);
@@ -138,10 +150,12 @@ void control_malloc (int a){
 * PARTE 1
 */
 
-void compute_stats(ip_mat * t){
+void compute_stats(ip_mat * t)
+{
     float max,min,somma = 0.0;
     unsigned int row,col,channel;
-    if(t!=NULL){
+    if(t!=NULL)
+    {
         for(channel=0;channel<(t->k);channel++)
         {
             max=get_val(t,0,0,channel);
@@ -150,10 +164,12 @@ void compute_stats(ip_mat * t){
             {
                 for(col=0;col<(t->w);col++)
                 {
-                    if(max<(get_val(t,row,col,channel))){
+                    if(max<(get_val(t,row,col,channel)))
+                    {
                         max=get_val(t,row,col,channel);
                     }
-                    if(min>(get_val(t,row,col,channel))){
+                    if(min>(get_val(t,row,col,channel)))
+                    {
                         min=get_val(t,row,col,channel);
                     }
                     somma+=get_val(t,row,col,channel);
@@ -172,9 +188,11 @@ void compute_stats(ip_mat * t){
     }
 }
 /*Accetta valori compresi tra 0 e h-1 e tra 0 e w-1*/
-ip_mat * ip_mat_subset(ip_mat * t, unsigned int row_start, unsigned int row_end, unsigned int col_start, unsigned int col_end){
+ip_mat * ip_mat_subset(ip_mat * t, unsigned int row_start, unsigned int row_end, unsigned int col_start, unsigned int col_end)
+{
 
-    if(t==NULL || (row_end)>(t->h-1) || (col_end)>(t->w-1) || (row_start>row_end) || (col_start>col_end)){
+    if(t==NULL || (row_end)>(t->h-1) || (col_end)>(t->w-1) || (row_start>row_end) || (col_start>col_end))
+    {
         printf("[ip_mat_subset] Errore: dimensioni errate (inserire valori compresi tra 0 e h-1 e tra 0 e w-1) o puntatore a NULL!\n");
         exit(1);
     }else{
@@ -197,10 +215,12 @@ ip_mat * ip_mat_subset(ip_mat * t, unsigned int row_start, unsigned int row_end,
 
 
 
-ip_mat * ip_mat_copy(ip_mat * in){
+ip_mat * ip_mat_copy(ip_mat * in)
+{
     unsigned int channel, row, col;
     ip_mat *r;
-    if(in!=NULL){
+    if(in!=NULL)
+    {
         r=ip_mat_create(in->h,in->w,in->k,0.0);
         for (channel=0; channel<(r->k); channel++)
         {
@@ -220,9 +240,11 @@ ip_mat * ip_mat_copy(ip_mat * in){
     }
 }
 
-void ip_mat_init_random(ip_mat * t, float mean, float var){
+void ip_mat_init_random(ip_mat * t, float mean, float var)
+{
     unsigned int channel, row, col;
-    if(t!=NULL){
+    if(t!=NULL)
+    {
         for (channel=0; channel<(t->k); channel++)
         {
             for (row=0; row<(t->h); row++)
@@ -237,13 +259,12 @@ void ip_mat_init_random(ip_mat * t, float mean, float var){
     }
 }
 
-ip_mat * ip_mat_mean(ip_mat * a, ip_mat * b){
+ip_mat * ip_mat_mean(ip_mat * a, ip_mat * b)
+{
     unsigned int channel, row, col;
     ip_mat *r;
-    if(a==NULL || b==NULL || (a->h)!=(b->h) || (a->w)!=(b->w) || (a->k)!=(b->k)){
-        printf("[ip_mat_mean] Errore: dimensioni incongruenti o puntatore a NULL!\n");
-        exit(1);
-    }else{
+    if((a!=NULL) && (b!=NULL) && ((a->h)==(b->h)) && ((a->w)==(b->w)) && ((a->k)==(b->k)))
+    {
         r=ip_mat_create(a->h,a->w,a->k,0.0);
         for (channel=0; channel<(r->k); channel++)
         {
@@ -256,12 +277,17 @@ ip_mat * ip_mat_mean(ip_mat * a, ip_mat * b){
             }
         }
         return r;
+    }else{
+        printf("[ip_mat_mean] Errore: dimensioni incongruenti o puntatore a NULL!\n");
+        exit(1);
     }
 }
 
-void ip_mat_free(ip_mat *a){
+void ip_mat_free(ip_mat *a)
+{
     unsigned int row, col;
-    if(a!=NULL){ /*non si interrompe*/
+    if(a!=NULL)
+    { /*non si interrompe*/
         for (row=0; row<(a->h); row++)
         {
 
@@ -281,7 +307,8 @@ ip_mat * ip_mat_create(unsigned int h, unsigned int w,unsigned  int k, float v)
 {
     unsigned int x, y, z;
     ip_mat *result;
-    if(h!=0 && w!=0 && k!=0){
+    if(h!=0 && w!=0 && k!=0)
+    {
         result = (ip_mat*)malloc(sizeof(ip_mat));
         control_malloc(result==NULL);
         result->w = w;
@@ -315,7 +342,7 @@ ip_mat * ip_mat_sum(ip_mat * a, ip_mat * b)
   unsigned int channel, row, col;
   ip_mat *result;
 
-  if(a!=NULL && b!=NULL && ((a->w == b->w) && (a->h == b->h) && (a->k == b->k)))
+  if((a!=NULL) && (b!=NULL) && (a->w == b->w) && (a->h == b->h) && (a->k == b->k))
   {
       result = ip_mat_create(a->h,a->w,a->k,0.0);
       for(channel = 0; channel < a->k; channel++)
@@ -344,7 +371,7 @@ ip_mat * ip_mat_sub(ip_mat * a, ip_mat * b)
     unsigned int channel, row, col;
     ip_mat *result;
 
-    if(a!=NULL && b!=NULL && ((a->w == b->w) && (a->h == b->h) && (a->k == b->k)))
+    if((a!=NULL) && (b!=NULL) && (a->w == b->w) && (a->h == b->h) && (a->k == b->k))
     {
         result = ip_mat_create(a->h,a->w,a->k,0.0);
         for(channel = 0; channel < a->k; channel++)
@@ -371,79 +398,80 @@ ip_mat * ip_mat_concat(ip_mat * a, ip_mat * b, int dimensione)
 {
     unsigned int channel, row, col;
     ip_mat *result;
-    if(a!=NULL && b!=NULL){
+    if((a!=NULL) && (b!=NULL))
+    {
         if((dimensione == 0) && (a->w == b->w) && (a->k == b->k))
         {
-        result = ip_mat_create(a->h + b->h, a->w, a->k, 0.0);
-        for(channel = 0; channel < result->k;channel++) /*adding a*/
-        {
-            for(row = 0; row < a->h;row++)
+            result = ip_mat_create(a->h + b->h, a->w, a->k, 0.0);
+            for(channel = 0; channel < result->k;channel++) /*adding a*/
             {
-            for(col = 0; col < result->w; col++)
+                for(row = 0; row < a->h;row++)
+                {
+                    for(col = 0; col < result->w; col++)
+                    {
+                        set_val(result,row,col,channel,get_val(a,row,col,channel));
+                    }
+                }
+            }
+            for(channel = 0; channel < result->k; channel++) /*adding b*/
             {
-                set_val(result,row,col,channel,get_val(a,row,col,channel));
+                for(row = 0; row < b->h;row++)
+                {
+                    for(col = 0; col < result->w; col++)
+                    {
+                        set_val(result,row + a->h,col,channel,get_val(b,row,col,channel));
+                    }
+                }
             }
-            }
-        }
-        for(channel = 0; channel < result->k; channel++) /*adding b*/
-        {
-            for(row = 0; row < b->h;row++)
-            {
-            for(col = 0; col < result->w; col++)
-            {
-                set_val(result,row + a->h,col,channel,get_val(b,row,col,channel));
-            }
-            }
-        }
         }
         else if((dimensione == 1) && (a->h == b->h) && (a->k == b->k))
         {
-        result = ip_mat_create(a->h, a->w + b->w, a->k, 0.0);
-        for(channel = 0; channel < result->k;channel++) /*adding a*/
-        {
-            for(row = 0; row < result->h;row++)
+            result = ip_mat_create(a->h, a->w + b->w, a->k, 0.0);
+            for(channel = 0; channel < result->k;channel++) /*adding a*/
             {
-            for(col = 0; col < a->w; col++)
+                for(row = 0; row < result->h;row++)
+                {
+                    for(col = 0; col < a->w; col++)
+                    {
+                        set_val(result,row,col,channel,get_val(a,row,col,channel));
+                    }
+                }
+            }
+            for(channel = 0; channel < result->k;channel++) /*adding b*/
             {
-                set_val(result,row,col,channel,get_val(a,row,col,channel));
+                for(row = 0; row < result->h;row++)
+                {
+                    for(col = 0; col < b->w; col++)
+                    {
+                        set_val(result,row,col + a->w,channel,get_val(b,row,col,channel));
+                    }
+                }
             }
-            }
-        }
-        for(channel = 0; channel < result->k;channel++) /*adding b*/
-        {
-            for(row = 0; row < result->h;row++)
-            {
-            for(col = 0; col < b->w; col++)
-            {
-                set_val(result,row,col + a->w,channel,get_val(b,row,col,channel));
-            }
-            }
-        }
         }
         else if((dimensione == 2) && (a->h == b->h) && (a->w == b->w))
         {
-        result = ip_mat_create(a->h, a->w , a->k + b->k, 0.0);
-        for(channel = 0; channel < a->k;channel++) /*adding a*/
-        {
-            for(row = 0; row < result->h;row++)
+            result = ip_mat_create(a->h, a->w , a->k + b->k, 0.0);
+            for(channel = 0; channel < a->k;channel++) /*adding a*/
             {
-            for(col = 0; col < result->w; col++)
+                for(row = 0; row < result->h;row++)
+                {
+                for(col = 0; col < result->w; col++)
+                {
+                    set_val(result,row,col,channel,get_val(a,row,col,channel));
+                }
+                }
+            }
+            for(channel = 0; channel < b->k;channel++) /*adding b*/
             {
-                set_val(result,row,col,channel,get_val(a,row,col,channel));
+                for(row = 0; row < result->h;row++)
+                {
+                    for(col = 0; col < result->w; col++)
+                    {
+                        set_val(result,row,col,channel + a->k,get_val(b,row,col,channel));
+                    }
+                }
             }
-            }
-        }
-        for(channel = 0; channel < b->k;channel++) /*adding b*/
-        {
-            for(row = 0; row < result->h;row++)
-            {
-            for(col = 0; col < result->w; col++)
-            {
-                set_val(result,row,col,channel + a->k,get_val(b,row,col,channel));
-            }
-            }
-        }
-        }else{
+        }else        {
             printf("[ip_mat_concat]Input error: dimensioni incongruenti!\n");
             exit(1);
         }
@@ -493,7 +521,6 @@ ip_mat *  ip_mat_add_scalar(ip_mat *a, float c)
             for (col=0; col<a->w; col++)
             {
                 set_val(new_mat,row,col,channel,a->data[row][col][channel] + c);
-                /*new_mat->data[x][y][z] = a->data[x][y][z] + c;*/
             }
 
         }
@@ -534,7 +561,8 @@ ip_mat * ip_mat_to_gray_scale(ip_mat * in)
 }
 
 
-ip_mat * ip_mat_corrupt(ip_mat * a, float amount){
+ip_mat * ip_mat_corrupt(ip_mat * a, float amount)
+{
     unsigned int channel, row, col;
     ip_mat *result;
     if(a!=NULL){
@@ -556,13 +584,12 @@ ip_mat * ip_mat_corrupt(ip_mat * a, float amount){
     }
 }
 
-ip_mat * ip_mat_blend(ip_mat * a, ip_mat * b, float alpha){
+ip_mat * ip_mat_blend(ip_mat * a, ip_mat * b, float alpha)
+{
     unsigned int row,col,channel;
     ip_mat *blend;
-    if((a==NULL || b==NULL) || ((a->h)!=(b->h) || (a->w)!=(b->w) || (a->k)!=(b->k))){
-        printf("[ip_mat_blend]Errore: dimensioni incongruenti o puntatori a NULL!\n");
-        exit(1);
-    }else{
+    if((a!=NULL) && (b!=NULL) && (a->h == b->h) && (a->w == b->w) && (a->k == b->k))
+    {
         blend = ip_mat_create(a->h, a->w, a->k, 0.0);
         for (row=0; row<a->h; row++)
         {
@@ -575,13 +602,20 @@ ip_mat * ip_mat_blend(ip_mat * a, ip_mat * b, float alpha){
             }
         }
         return blend;
+
+    }else{
+        printf("[ip_mat_blend]Errore: dimensioni incongruenti o puntatori a NULL!\n");
+        exit(1);
+
+
     }
 }
 
 ip_mat * ip_mat_padding(ip_mat * a, unsigned int pad_h, unsigned int pad_w)
 {
     ip_mat *pad_top, *pad_right_left, *pad_bottom, *result, *appoggio;
-    if(a!=NULL){
+    if(a!=NULL)
+    {
         pad_top = ip_mat_create(pad_h, a->w, a->k, 0.0);
         pad_right_left = ip_mat_create (a->h+pad_h, pad_w, a->k, 0.0);
         pad_bottom = ip_mat_create (pad_h, a->w + 2*(pad_w), a->k, 0.0);
@@ -614,7 +648,8 @@ ip_mat * ip_mat_padding(ip_mat * a, unsigned int pad_h, unsigned int pad_w)
 ip_mat * ip_mat_brighten(ip_mat * a, float bright)
 {
     ip_mat *result;
-    if(a!=NULL){
+    if(a!=NULL)
+    {
         result = ip_mat_add_scalar (a, bright);
         return result;
     }else{
@@ -627,9 +662,10 @@ ip_mat * ip_mat_convolve(ip_mat * a, ip_mat * f)
 {
     unsigned int channel, row, col;
 
-    ip_mat *aux; 
+    ip_mat *aux;
     ip_mat *result;
-    if(a!=NULL && f!=NULL){
+    if(a!=NULL && f!=NULL)
+    {
         aux = ip_mat_padding(a, (f->h - 1) / 2, (f->w - 1) / 2);
         result = ip_mat_create(a->h, a->w, a->k, 0.0);
 
@@ -637,10 +673,10 @@ ip_mat * ip_mat_convolve(ip_mat * a, ip_mat * f)
         {
             for(row = 0; row + f->h < aux->h; row++)
             {
-            for(col = 0; col + f->h < aux->w; col++)
-            {
-                set_val(result, row, col, channel, calculate_convolve(aux, f, row, col, channel));
-            }
+                for(col = 0; col + f->h < aux->w; col++)
+                {
+                    set_val(result, row, col, channel, calculate_convolve(aux, f, row, col, channel));
+                }
             }
         }
 
@@ -716,7 +752,8 @@ void rescale(ip_mat * t, float new_max)
 {
     unsigned int channel, row, col;
     float appoggio;
-    if(t!=NULL){
+    if(t!=NULL)
+    {
         appoggio = 0;
         compute_stats(t);
         for(channel = 0; channel < t->k; channel++)
@@ -741,7 +778,8 @@ void clamp(ip_mat * t, float low, float high)
 {
     unsigned int channel, row, col;
     float appoggio;
-    if(t!=NULL){
+    if(t!=NULL)
+    {
         if(low>high){ /*scambiamo le due variabili se inserite al contraio*/
             appoggio=low;
             low=high;
@@ -778,10 +816,7 @@ ip_mat * create_gaussian_filter(unsigned int w, unsigned int h, unsigned int k, 
     float sum=0.0;
     float op,x,y;
     ip_mat *result;
-    if(sigma==0 || w==0 || h==0 || k==0){
-        printf("[create_gaussian_filter] Errore: sigma non può essere 0 o dimensioni uguali a 0!\n");
-        exit(1);
-    }else{
+    if(sigma!=0 && w!=0 && h!=0 && k!=0){
         result = ip_mat_create(h,w,k,0.0);
         i=h/2;
         j=w/2;
@@ -811,5 +846,8 @@ ip_mat * create_gaussian_filter(unsigned int w, unsigned int h, unsigned int k, 
             }
         }
         return result;
+    }else{
+        printf("[create_gaussian_filter] Errore: sigma non può essere 0 o dimensioni uguali a 0!\n");
+        exit(1);
     }
 }

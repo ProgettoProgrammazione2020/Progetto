@@ -1,3 +1,10 @@
+/*
+ ID GRUPPO: 59
+ Mattia Castellani 881427
+ Andreea Nechifor 882345
+ Marco Pastrello 881679
+ Niccolò Simonato 879993
+*/
 #include <stdio.h>
 #include <string.h>
 #include "ip_lib.h"

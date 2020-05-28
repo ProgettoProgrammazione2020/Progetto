@@ -1,5 +1,12 @@
 /*
  Laboratorio di programmazione A.A. 2019/2020
+
+ ID GRUPPO: 59
+ Mattia Castellani 881427
+ Andreea Nechifor 882345
+ Marco Pastrello 881679
+ Niccolò Simonato 879993
+
 */
 
 #ifndef IP_LIB_H
