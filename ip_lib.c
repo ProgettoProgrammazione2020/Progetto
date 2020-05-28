@@ -175,11 +175,10 @@ ip_mat * ip_mat_subset(ip_mat * t, unsigned int row_start, unsigned int row_end,
             {
                 for(col=0;col<=col_end-col_start;col++)
                 {
-                    set_val(r,row,col,channel,get_val(t,row,col,channel));
+                    set_val(r,row,col,channel,get_val(t,(row_start+row),(col_start+col),channel));
                 }
             }
         }
-        ip_mat_free(t);
         return r;
     }
 }
